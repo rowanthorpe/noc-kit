@@ -1,0 +1,28 @@
+NOC-Kit version 0.1
+Copyright © 2012 Rowan Thorpe.
+Report bugs to rowan *at* rowanthorpe _DOT_ com
+
+Quick Install Instructions:
+
+ tar xjf noc-kit-${VERSION}.tar.bz2 && \
+  cd noc-kit-${VERSION} && \
+  mkdir build && \
+  cd build && \
+  ../configure && \
+  make && \
+  make install
+
+(or use "tar xJf noc-kit-${VERSION}.tar.xz" above to extract an xz archive).
+
+See INSTALL file for more details.
+
+TODO:
+
+{
+ * add --flags processing to showsigs
+  => add --source, --help, version and -- to showsigs
+ * add --pattern and --version to slaughter.sh
+  => put --version shell function in shell_common.sh
+}
+ => add help2man functionality to automake
+ * Set package version in configure.ac and auto-update it in README using README.in, rather than configure.ac sourcing from README.

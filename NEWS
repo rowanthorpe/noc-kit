@@ -1,0 +1,28 @@
+noc-kit News
+=======
+
+CHANGES IN NOC-KIT VERSION 0.1:
+
+  NEW FEATURES:
+
+    * showsigs.c: new tool
+    
+    * slaughter.sh: new tool (and alias slaughterall.sh)
+
+  IMPROVEMENTS:
+
+    * None
+
+  CHANGES IN BEHAVIOUR:
+
+    * N/A
+
+  BUG FIXES:
+
+    * N/A
+
+  TODO (PLANNED):
+
+    * Manpages/Info pages
+
+    * better --help output

@@ -1,0 +1,11 @@
+2012-10-22  Rowan Thorpe  <rowan@rowanthorpe.com>
+
+* src/general/slaughter.sh: Created new file.
+
+* src/general/showsigs.c: Created new file.
+
+* src/general/shell_common.sh: Created new file.
+
+2012-11-14  Rowan Thorpe  <rowan@rowanthorpe.com>
+
+* src/general/Makefile.am: Added creation of extensionless symlinks to install of slaughter.sh
