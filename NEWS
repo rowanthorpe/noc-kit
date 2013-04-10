@@ -33,17 +33,25 @@ CHANGES IN NOC-KIT VERSION 0.2:
 
     * zfd.sh: new tool
 
-    * nk_utils.sh: new source functions
+    * nk_utils.sh (__scriptname, __scriptbasename, __scriptdirname,
+                   __usage_footer, __version, __usage, __info, __warn, __die,
+                   __filter, __reduce, __list_create, __list_destroy,
+                   __list_append, __list_prepend, __list_insert, __list_pop,
+                   __list_shift, __list_splice, __list_length, __list_iterate,
+                   __list_slice, __list_reverse, __list_sort, __lambda,
+                   __map): new source functions
 
-    * nk_tests.sh: new source functions
+
+    * nk_tests.sh (__on, __off, __ison, __isoff, __eql, __neq, __has, __empty,
+                   __notempty): new source functions
 
   IMPROVEMENTS:
 
-    * ....
+    * Split and improved shell libs
 
   CHANGES IN BEHAVIOUR:
 
-    * N/A
+    * New syntax for all internal functions and vars
 
   BUG FIXES:
 
@@ -54,4 +62,3 @@ CHANGES IN NOC-KIT VERSION 0.2:
     * Manpages/Info pages
 
     * better --help output
-

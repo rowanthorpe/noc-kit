@@ -12,4 +12,16 @@
 
 2013-04-10  Rowan Thorpe  <rowan@rowanthorpe.com>
 
-* ...
+* Makefile.am: Added -ansi to AM_CFLAGS
+
+* src/general/showsigs.c, src/general/slaughter.sh, src/general/nk_tests.sh,
+  src/general/nk_utils.sh, src/system-specific/zfd.sh: Small syntax
+                                                       improvements throughout.
+
+* src/general/nk_tests.sh, src/general/nk_utils.sh: Added libs, deleted
+                                                    shell_common.sh
+
+* src/system-specific/zfd.sh: Created new file.
+
+* src/general/showsigs.c, src/general/slaughter.sh, src/general/nk_tests.sh,
+  src/general/nk_utils.sh, src/system-specific/zfd.sh: Updated/improved copyright notices.
