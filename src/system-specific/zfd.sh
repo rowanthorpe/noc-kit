@@ -29,7 +29,7 @@
 # Config
 __prefix=/usr/local
 __root_dir=${__prefix}/libexec/noc-kit
-VERSION=0.1
+VERSION=0.2.0
 . "${__root_dir}/nk_utils.sh" || {
 	echo "Failed sourcing nk_utils.sh. Stopping.">&2
 	exit 1
