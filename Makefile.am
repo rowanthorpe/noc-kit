@@ -1,4 +1,4 @@
-AM_CFLAGS = -pedantic
+AM_CFLAGS = -pedantic -ansi
 ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = src/general src/system-specific src/app-specific
 EXTRA_DIST = autogen.sh

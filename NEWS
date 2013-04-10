@@ -1,5 +1,5 @@
-noc-kit News
-=======
+NOC-Kit news
+============
 
 CHANGES IN NOC-KIT VERSION 0.1:
 
@@ -26,3 +26,32 @@ CHANGES IN NOC-KIT VERSION 0.1:
     * Manpages/Info pages
 
     * better --help output
+
+CHANGES IN NOC-KIT VERSION 0.2:
+
+  NEW FEATURES:
+
+    * zfd.sh: new tool
+
+    * nk_utils.sh: new source functions
+
+    * nk_tests.sh: new source functions
+
+  IMPROVEMENTS:
+
+    * ....
+
+  CHANGES IN BEHAVIOUR:
+
+    * N/A
+
+  BUG FIXES:
+
+    * N/A
+
+  TODO (PLANNED):
+
+    * Manpages/Info pages
+
+    * better --help output
+

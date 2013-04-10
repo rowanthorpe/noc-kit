@@ -1,5 +1,5 @@
-NOC-Kit version 0.1
-Copyright © 2012 Rowan Thorpe.
+NOC-Kit version 0.2
+Copyright © 2012, 2013 Rowan Thorpe.
 Report bugs to rowan *at* rowanthorpe _DOT_ com
 
 Quick Install Instructions:
@@ -18,11 +18,8 @@ See INSTALL file for more details.
 
 TODO:
 
-{
  * add --flags processing to showsigs
   => add --source, --help, version and -- to showsigs
- * add --pattern and --version to slaughter.sh
-  => put --version shell function in shell_common.sh
-}
- => add help2man functionality to automake
+   => add help2man functionality to automake
+ * add --pattern to slaughter.sh
  * Set package version in configure.ac and auto-update it in README using README.in, rather than configure.ac sourcing from README.

@@ -3,7 +3,7 @@ AM_INSTALLCHECK_STD_OPTIONS_EXEMPT = showsigs
 bin_PROGRAMS = showsigs
 showsigs_SOURCES = showsigs.c
 dist_bin_SCRIPTS = slaughter.sh
-dist_pkglibexec_SCRIPTS = shell_common.sh
+dist_pkglibexec_SCRIPTS = nk_utils.sh nk_tests.sh
 install-data-hook:
 	cd $(DESTDIR)$(bindir) && \
 	[ -h slaughterall.sh ] || \

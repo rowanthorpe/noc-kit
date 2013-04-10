@@ -6,14 +6,18 @@
 /* showsigs.c: Do nothing but override and warn when signals are received,
                except for SIGSTOP or SIGKILL (which can't be overriden).
 
- Copyright © 2012 Rowan Thorpe
+ ----
 
- This program is free software: you can redistribute it and/or modify
+ Copyright © 2012, 2013 Rowan Thorpe
+
+ This file is part of NOC-Kit.
+
+ NOC-Kit is free software: you can redistribute it and/or modify
  it under the terms of the GNU Affero General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
- This program is distributed in the hope that it will be useful,
+ NOC-Kit is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  GNU Affero General Public License for more details.
@@ -30,7 +34,7 @@
 
 /*
 	TODO:
-	 * --help output
+	 * --help and --version output
 	 * allow flags to configure which sigs to wait for (default: all)
 */
 
@@ -118,4 +122,3 @@ int main(void) {
 
 	exit(1);
 }
-

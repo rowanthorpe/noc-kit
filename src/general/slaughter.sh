@@ -4,14 +4,16 @@
 #
 ###########
 #
-# Copyright © 2012 Rowan Thorpe
+# Copyright © 2012, 2013 Rowan Thorpe
 #
-# This program is free software: you can redistribute it and/or modify
+# This file is part of NOC-Kit.
+#
+# NOC-Kit is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful,
+# NOC-Kit is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU Affero General Public License for more details.
@@ -25,16 +27,16 @@
 # (obviously, fix the address with the appropriate symbols and no spaces).
 
 # Config
-nk_prefix=/usr/local
-nk_root_dir=${nk_prefix}/libexec/noc-kit
+__prefix=/usr/local
+__root_dir=${__prefix}/libexec/noc-kit
 VERSION=0.1
-. "${nk_root_dir}/shell_common.sh" || {
-	echo "Failed sourcing shell_common.sh. Stopping.">&2
+. "${__root_dir}/nk_utils.sh" || {
+	echo "Failed sourcing nk_utils.sh. Stopping.">&2
 	exit 1
 }
 
 # Functions
-nk_usage() {
+__usage() {
 	cat <<EOH
 Usage: slaughter.sh [OPTIONS] procnum [procnum] ...
        slaughterall.sh [OPTIONS] procname [procname] ...
@@ -58,24 +60,24 @@ OPTIONS:
  --quiet|-q           : Don't output progress.
  --                   : End option processing.
 
- Copyright © 2012 Rowan Thorpe.
+ Copyright © 2012, 2013 Rowan Thorpe.
  Report bugs to rowan *at* rowanthorpe _DOT_ com
 EOH
-	nk_usage_footer
+	__usage_footer
 }
 
 # Getopts
-nk_duration=1
-nk_repetitions=3
-nk_verbose=1
+__duration=1
+__repetitions=3
+__verbose=1
 while [ -n "$1" ]; do
 	case "$1" in
 	--help|-h|--usage)
-		nk_usage
+		__usage
 		exit 0
 		;;
 	--version|-V|--about)
-		nk_version
+		__version
 		exit 0
 		;;
 	--source|-S)
@@ -84,17 +86,17 @@ while [ -n "$1" ]; do
 		;;
 	--duration|-d)
 		if [ -z "$2" ] || printf "$2" | grep -q '[^0-9]' || [ $2 -gt 255 ] || [ $2 -lt 1 ]; then
-			nk_die_u 253 "Invalid argument given for: duration."
+			__die -u "Invalid argument given for: duration."
 		fi
-		nk_duration="$2"
+		__duration="$2"
 		shift 2
 		continue
 		;;
 	--repetitions|-r)
 		if [ -z "$2" ] || printf "$2" | grep -q '[^0-9]' || [ $2 -gt 255 ] || [ $2 -lt 1 ]; then
-			nk_die_u 253 "Invalid argument given for: repetitions."
+			__die -u "Invalid argument given for: repetitions."
 		fi
-		nk_repetitions="$2"
+		__repetitions="$2"
 		shift 2
 		continue
 		;;
@@ -104,7 +106,7 @@ while [ -n "$1" ]; do
 #		      format (e.g. -p '15,1,15,2,15,2,9,1')
 #		;;
 	--quiet|-q)
-		nk_verbose=0
+		__verbose=0
 		shift
 		continue
 		;;
@@ -113,7 +115,7 @@ while [ -n "$1" ]; do
 		break
 		;;
 	-*)
-		nk_die_u 254 "Unrecognised option specified."
+		__die -u "Unrecognised option specified."
 		;;
 	*)
 		break
@@ -122,57 +124,57 @@ while [ -n "$1" ]; do
 done
 
 # Setup
-nk_ret=0
-nk_exit_val=0
-nk_count=0
-case "$nk_exec_name" in
+__ret=0
+__exit_val=0
+__count=0
+case "$__exec_name" in
 slaughter|slaughter.sh)
-	nk_kill_cmd() {
+	__kill_cmd() {
 		kill -s "$@"
 	}
-	nk_check_cmd() {
+	__check_cmd() {
 		ps -p "$@"
 	}
-	nk_id_type=procid
+	__id_type=procid
 	;;
 slaughterall|slaughterall.sh)
-	nk_kill_cmd() {
+	__kill_cmd() {
 		killall -s "$@"
 	}
-	nk_check_cmd() {
+	__check_cmd() {
 		pgrep -c "^${@}\$"
 	}
-	nk_id_type=procname
+	__id_type=procname
 	;;
 *)
-	nk_die_u 255 "Command form $nk_exec_name unknown"
+	__die -u "Command form $__exec_name unknown"
 	;;
 esac
 
 # Main
-for nk_arg in "$@"; do
-	nk_check_cmd "$nk_arg" >/dev/null 2>&1 || {
-		nk_warn "$nk_id_type $nk_arg doesn't exist"
-		nk_exitval=1
+for __arg in "$@"; do
+	__check_cmd "$__arg" >/dev/null 2>&1 || {
+		__warn "$__id_type $__arg doesn't exist"
+		__exitval=1
 		continue 1
 	}
-	while [ $nk_count -lt $nk_repetitions ]; do
-		nk_kill_cmd 15 "$nk_arg" >/dev/null 2>&1
-		sleep $nk_duration
-		nk_check_cmd "$nk_arg" >/dev/null 2>&1 || {
-			nk_warn "Succeeded: nk_kill_cmd 15 \"$nk_arg\""
+	while [ $__count -lt $__repetitions ]; do
+		__kill_cmd 15 "$__arg" >/dev/null 2>&1
+		sleep $__duration
+		__check_cmd "$__arg" >/dev/null 2>&1 || {
+			__warn "Succeeded: __kill_cmd 15 \"$__arg\""
 			continue 2
 		}
-		nk_warn "Failed: nk_kill_cmd 15 \"$nk_arg\""
-		nk_count=$(( nk_count+1 ))
+		__warn "Failed: __kill_cmd 15 \"$__arg\""
+		__count=$(( __count+1 ))
 	done
-	nk_kill_cmd 9 "$nk_arg" >/dev/null 2>&1
-	sleep $nk_duration
-	if nk_check_cmd "$nk_arg" >/dev/null 2>&1; then
-		nk_die 1 "Failed: nk_kill_cmd 9 \"$nk_arg\""
-		nk_exitval=1
+	__kill_cmd 9 "$__arg" >/dev/null 2>&1
+	sleep $__duration
+	if __check_cmd "$__arg" >/dev/null 2>&1; then
+		__die "Failed: __kill_cmd 9 \"$__arg\""
+		__exitval=1
 	else
-		nk_warn "Succeeded: nk_kill_cmd 9 \"$nk_arg\""
+		__warn "Succeeded: __kill_cmd 9 \"$__arg\""
 	fi
 done
-exit $nk_exitval
+exit $__exitval
