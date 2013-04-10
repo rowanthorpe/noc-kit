@@ -1,5 +1,4 @@
-dnl FIXME: add --help and --version to showsigs to avoid the below exemption
-AM_INSTALLCHECK_STD_OPTIONS_EXEMPT = showsigs
+AM_INSTALLCHECK_STD_OPTIONS_EXEMPT = 
 bin_PROGRAMS = showsigs
 showsigs_SOURCES = showsigs.c
 dist_bin_SCRIPTS = slaughter.sh

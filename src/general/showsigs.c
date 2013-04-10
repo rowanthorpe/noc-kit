@@ -2,6 +2,11 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <unistd.h>
+#include <string.h>
+
+void help(FILE *stream);
+void version(FILE *stream, char *_version, char *nk_version);
+int source(FILE *stream);
 
 /* showsigs.c: Do nothing but override and warn when signals are received,
                except for SIGSTOP or SIGKILL (which can't be overriden).
@@ -34,18 +39,41 @@
 
 /*
 	TODO:
-	 * --help and --version output
 	 * allow flags to configure which sigs to wait for (default: all)
+     * find how to embed source for --source output
 */
 
-int main(void) {
+int main(int argc, char *argv[]) {
 	sigset_t sigs;
 	int sig;
+	char *_version = "0.2.0";
+	char *nk_version = "0.2.0";
+	int count;
+
+	if (argc > 1)
+		for (count = 1; count < argc; count++) {
+			if (argv[count][0] != '-' || strncmp(argv[count], "--", 3) == 0)
+				break;
+			if (strncmp(argv[count], "-h", 3) == 0 || strncmp(argv[count], "--help", 7) == 0) {
+				help(stdout);
+				exit(0);
+			}
+			if (strncmp(argv[count], "-V", 3) == 0 || strncmp(argv[count], "--version", 10) == 0) {
+				version(stdout, _version, nk_version);
+				exit(0);
+			}
+			if (strncmp(argv[count], "-S", 3) == 0 || strncmp(argv[count], "--source", 9) == 0) {
+				exit(source(stdout));
+			}
+			fprintf(stderr, "Invalid option specified: %s\n", argv[count]);
+			exit(1);
+		}
 
 	printf("PID: %d\n", getpid());
-	sigemptyset(&sigs);
+	sigfillset(&sigs);
 
-/* -- posix signals -- */
+/*
+ -- posix signals, for later use --
 	sigaddset(&sigs, SIGABRT);
 	sigaddset(&sigs, SIGALRM);
 	sigaddset(&sigs, SIGVTALRM);
@@ -103,15 +131,16 @@ int main(void) {
 	sigaddset(&sigs, SIGRTMAX-2);
 	sigaddset(&sigs, SIGRTMAX-1);
 	sigaddset(&sigs, SIGRTMAX);
-/* -- misc signals according to wikipedia -- */
-	/* sigaddset(&sigs, SIGEMT); -- not in my signals.h */
-	/* sigaddset(&sigs, SIGINFO); -- not in my signals.h */
+ -- misc signals according to wikipedia --
+	sigaddset(&sigs, SIGEMT); -- not in my signals.h
+	sigaddset(&sigs, SIGINFO); -- not in my signals.h
 	sigaddset(&sigs, SIGPWR);
-	/* sigaddset(&sigs, SIGLOST); -- not in my signals.h */
+	sigaddset(&sigs, SIGLOST); -- not in my signals.h
 	sigaddset(&sigs, SIGWINCH);
-/* -- other misc signals found elsewhere... -- */
+ -- other misc signals found elsewhere... --
 	sigaddset(&sigs, SIGSTKFLT);
 	sigaddset(&sigs, SIGIO);
+*/
 
 	sigprocmask(SIG_BLOCK, &sigs, NULL);
 	while(1) {
@@ -121,4 +150,16 @@ int main(void) {
 	sigprocmask(SIG_UNBLOCK, &sigs, NULL);
 
 	exit(1);
+}
+
+void help(FILE *stream) {
+	fprintf(stream, "%s\n", "Usage: showsigs [--help|-h] [--version|-V] [--source|-S] [--]\n\n Do nothing but override and warn when signals are received, except for SIGSTOP\n or SIGKILL (which can't be overridden).");
+}
+void version(FILE *stream, char *_version, char *nk_version) {
+	fprintf(stream, "showsigs %s - noc-kit %s\nCopyright (C) 2012, 2013 Rowan Thorpe.\nLicense AGPLv3+: GNU AGPL version 3 or later <http://gnu.org/licenses/agpl.html>\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.\n", _version, nk_version);
+}
+int source(FILE *stream) {
+	char *mysource = "TODO: use make to insert source into mysource";
+	fprintf(stream, "%s\n", mysource);
+	return(0);
 }

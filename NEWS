@@ -45,20 +45,18 @@ CHANGES IN NOC-KIT VERSION 0.2.0:
     * nk_tests.sh (__on, __off, __ison, __isoff, __eql, __neq, __has, __empty,
                    __notempty): new source functions
 
-  IMPROVEMENTS:
-
-    * Split and improved shell libs
-
   CHANGES IN BEHAVIOUR:
 
     * New syntax for all internal functions and vars
 
   BUG FIXES:
 
-    * N/A
+    * changed AM_CFLAGS
+    
+  IMPROVEMENTS:
 
-  TODO (PLANNED):
+    * Split and improved shell libs
 
-    * Manpages/Info pages
+    * showsigs.sh: --help, --version, --source stub handling
 
-    * better --help output
+    * showsigs.sh: use sigfullset to initialise

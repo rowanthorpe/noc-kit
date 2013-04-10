@@ -12,7 +12,7 @@
 
 2013-04-10  Rowan Thorpe  <rowan@rowanthorpe.com>
 
-* Makefile.am: Added -ansi to AM_CFLAGS
+* Makefile.am: Added "-Wall -pedantic-errors -fomit-frame-pointer -O3" to AM_CFLAGS
 
 * src/general/showsigs.c, src/general/slaughter.sh, src/general/nk_tests.sh,
   src/general/nk_utils.sh, src/system-specific/zfd.sh: Small syntax
