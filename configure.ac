@@ -2,7 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
 AC_INIT([NOC-Kit], m4_esyscmd([sed -n '1s/^.*version //p' README | tr -d '\n']), [http://www.github.com/rowanthorpe/noc-kit/issues], [noc-kit], [http://www.github.com/rowanthorpe/noc-kit])
-AC_CONFIG_SRCDIR([src/general/shell_common.sh])
+AC_CONFIG_SRCDIR([src/general/nk_utils.sh])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([config])
 if test -z "$PACKAGE_VERSION"; then
