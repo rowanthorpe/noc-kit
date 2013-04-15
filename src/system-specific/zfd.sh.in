@@ -1,4 +1,4 @@
-#!/bin/sh
+#! @SHELL@
 
 # zfd.sh: see --help option for details
 #
@@ -27,22 +27,26 @@
 # (obviously, fix the address with the appropriate symbols and no spaces).
 
 # Config
-__prefix=/usr/local
-__root_dir=${__prefix}/libexec/noc-kit
-VERSION=0.2.0
-. "${__root_dir}/nk_utils.sh" || {
-	echo "Failed sourcing nk_utils.sh. Stopping.">&2
+__root_dir="@PKGLIBEXECDIR@"
+. "${__root_dir}/nk_common.sh" || {
+	echo "Failed sourcing nk_common.sh. Stopping.">&2
 	exit 1
 }
 
 __usage() {
 	cat <<EOH
-Usage: $__scriptbasename "block_device" "device_nickname" [datetime]
+Usage: $__scriptbasename [OPTIONS] "block_device" "device_nickname" [datetime]
 
 POSIX shell script to quickly zero-out good sectors (only) on a failing disk.
 
   * specify datetime to resume previous invocation of that instance
     (format: %Y_%m_%d-%H_%M_%S)
+
+OPTIONS:
+ --help|-h|--usage    : This help page.
+ --version|-V|--about : Output information about this command.
+ --source|-S          : Output this command as source code.
+ --                   : End option processing.
 
 DESCRIPTION:
 
@@ -74,10 +78,13 @@ TODO:
  * Use blktool, hdparm, raw devices, etc to avoid readahead confusing things
    (for people which --direct doesn't work for?).
 
- * Allow more fine-tuned handling of permissions, rather than just running the
-   whole script as root.
+ * Allow more fine-tuned handling of permissions, rather than just requiring
+   running the whole script as root.
 
+ Copyright © 2012, 2013 Rowan Thorpe.
+ Report bugs to rowan *at* rowanthorpe _DOT_ com
 EOH
+	__usage_footer
 }
 setup() {
 	test "`id -u`" = 0 || __die -u "Must be run as root"
@@ -173,9 +180,24 @@ zero_fill() {
 
 while test -n "$1"; do
 	case "$1" in
-	--help|--usage|-h) usage; exit 0;;
-	--version|-V) __version;;
+	--help|-h|--usage)
+		__usage
+		exit 0
+		;;
+	--version|-V|--about)
+		__version
+		exit 0
+		;;
+	--source|-S)
+		__source
+		exit 0
+		;;
+	--)
+		shift
+		break
+		;;
 	esac
+done
 setup "$@"
 ddrescue_pkg "install"
 for phase_type in fast splitting retrying; do

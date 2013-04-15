@@ -31,3 +31,6 @@ Makefile.in
 *.exe
 *.out
 *.app
+
+# Backups
+*~

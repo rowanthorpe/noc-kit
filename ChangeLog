@@ -10,6 +10,8 @@
 
 * src/general/Makefile.am: Added creation of extensionless symlinks to install of slaughter.sh
 
+* Version set to 0.1.0
+
 2013-04-10  Rowan Thorpe  <rowan@rowanthorpe.com>
 
 * Makefile.am: Added "-Wall -pedantic-errors -fomit-frame-pointer -O3" to AM_CFLAGS
@@ -25,3 +27,9 @@
 
 * src/general/showsigs.c, src/general/slaughter.sh, src/general/nk_tests.sh,
   src/general/nk_utils.sh, src/system-specific/zfd.sh: Updated/improved copyright notices.
+
+2013-04-10(2)  Rowan Thorpe  <rowan@rowanthorpe.com>
+
+* configure.ac: Changed test file to be the existing lib file, from the old deleted one
+
+* .gitignore: Added C build and temp files

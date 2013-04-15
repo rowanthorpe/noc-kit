@@ -1,4 +1,4 @@
-# nk_tests.sh:
+# nk_logic_ops.sh:
 #
 # NB: This aims to be POSIX.1-2008 compliant
 #
@@ -26,7 +26,7 @@
 # For bug-reports please email: rowan *at* rowanthorpe _DOT_ com
 # (obviously, fix the address with the appropriate symbols and no spaces).
 
-if test -z "$__tests_sourced"; then
+if test -z "$__logic_ops_sourced"; then
 	__on() { eval $1=1; }
 	__off() { unset $1; }
 	__ison() { test "x$1" = x1; }
@@ -47,7 +47,7 @@ if test -z "$__tests_sourced"; then
 	    unset __arg
 	}
 
-	__tests_cleanup() {
+	__logic_ops_cleanup() {
 	    __cleanup \
 "" \
 " \
@@ -64,7 +64,7 @@ __notempty \
 "" \
 ""
 	    unset -f __cleanup
-    	unset -f __tests_cleanup
+    	unset -f __logic_ops_cleanup
 	}
-	__tests_sourced=1
+	__logic_ops_sourced=1
 fi

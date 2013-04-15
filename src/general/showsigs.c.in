@@ -1,12 +1,12 @@
+#ifdef HAVE_CONFIG_H
+#    include "config.h"
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
 #include <unistd.h>
 #include <string.h>
-
-void help(FILE *stream);
-void version(FILE *stream, char *_version, char *nk_version);
-int source(FILE *stream);
+#include "version.h"
 
 /* showsigs.c: Do nothing but override and warn when signals are received,
                except for SIGSTOP or SIGKILL (which can't be overriden).
@@ -35,19 +35,22 @@ int source(FILE *stream);
  For bug-reports please email: rowan *at* rowanthorpe _DOT_ com
  (obviously, fix the address with the appropriate symbols and no spaces).
 
-*/
-
-/*
 	TODO:
 	 * allow flags to configure which sigs to wait for (default: all)
-     * find how to embed source for --source output
 */
 
+void _help(FILE *stream) {
+	fprintf(stream, "%s\n", "Usage: showsigs [--help|-h] [--version|-V] [--source|-S] [--]\n\n Do nothing but override and warn when signals are received, except for SIGSTOP\n or SIGKILL (which can't be overridden).");
+}
+void _version(FILE *stream) {
+	fprintf(stream, "showsigs - noc-kit %s\nCopyright (C) 2012, 2013 Rowan Thorpe.\nLicense AGPLv3+: GNU AGPL version 3 or later <http://gnu.org/licenses/agpl.html>\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.\n", package_version);
+}
+void _source(FILE *stream) {
+	fprintf(stream, "%s\n", @SHOWSIGS_SOURCE@);
+}
 int main(int argc, char *argv[]) {
 	sigset_t sigs;
 	int sig;
-	char *_version = "0.2.0";
-	char *nk_version = "0.2.0";
 	int count;
 
 	if (argc > 1)
@@ -55,15 +58,16 @@ int main(int argc, char *argv[]) {
 			if (argv[count][0] != '-' || strncmp(argv[count], "--", 3) == 0)
 				break;
 			if (strncmp(argv[count], "-h", 3) == 0 || strncmp(argv[count], "--help", 7) == 0) {
-				help(stdout);
+				_help(stdout);
 				exit(0);
 			}
 			if (strncmp(argv[count], "-V", 3) == 0 || strncmp(argv[count], "--version", 10) == 0) {
-				version(stdout, _version, nk_version);
+				_version(stdout);
 				exit(0);
 			}
 			if (strncmp(argv[count], "-S", 3) == 0 || strncmp(argv[count], "--source", 9) == 0) {
-				exit(source(stdout));
+				_source(stdout);
+				exit(0);
 			}
 			fprintf(stderr, "Invalid option specified: %s\n", argv[count]);
 			exit(1);
@@ -150,16 +154,4 @@ int main(int argc, char *argv[]) {
 	sigprocmask(SIG_UNBLOCK, &sigs, NULL);
 
 	exit(1);
-}
-
-void help(FILE *stream) {
-	fprintf(stream, "%s\n", "Usage: showsigs [--help|-h] [--version|-V] [--source|-S] [--]\n\n Do nothing but override and warn when signals are received, except for SIGSTOP\n or SIGKILL (which can't be overridden).");
-}
-void version(FILE *stream, char *_version, char *nk_version) {
-	fprintf(stream, "showsigs %s - noc-kit %s\nCopyright (C) 2012, 2013 Rowan Thorpe.\nLicense AGPLv3+: GNU AGPL version 3 or later <http://gnu.org/licenses/agpl.html>\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.\n", _version, nk_version);
-}
-int source(FILE *stream) {
-	char *mysource = "TODO: use make to insert source into mysource";
-	fprintf(stream, "%s\n", mysource);
-	return(0);
 }

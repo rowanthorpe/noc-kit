@@ -1,4 +1,4 @@
-# nk_utils.sh:
+# nk_common.sh:
 #
 # NB: This aims to be POSIX.1-2008 compliant
 #
@@ -26,26 +26,29 @@
 # For bug-reports please email: rowan *at* rowanthorpe _DOT_ com
 # (obviously, fix the address with the appropriate symbols and no spaces).
 
-if test -z "$__utils_sourced"; then
-	__scriptname="$(readlink -q -e -n "$0")"
+if test -z "$__common_sourced"; then
+	__scriptname="$0"
 	__scriptbasename="${__scriptname##*/}"
-	__scriptdirname="${__scriptname%/*}"
+	__scriptdirname="$(readlink -q -e -n "${__scriptname%/*}")"
+	__scriptname="${__scriptdirname}/${__scriptbasename}"
 
-	. "${__root_dir}/nk_tests.sh" || { printf %s\\n "Failed to load nk_tests.sh"; exit 1; }
-#	. "${__root_dir}/nk_lists.sh" || { printf %s\\n "Failed to load nk_lists.sh"; exit 1; } #TODO
+	PACKAGE_VERSION="@PACKAGE_VERSION@"
+	. "${__root_dir}/nk_logic_ops.sh" || { printf %s\\n "Failed to load nk_logic_ops.sh"; return 1; }
+#	. "${__root_dir}/nk_lists.sh" || { printf %s\\n "Failed to load nk_lists.sh"; return 1; } #TODO
 
 	__usage_footer() {
-		cat <<EOH
+		cat <<EOF
 
  Part of the NOC-Kit package.
  License AGPLv3+: GNU Affero GPL version 3 or later
  <http://gnu.org/licenses/agpl.html>.
  This is free software: you are free to change and redistribute it.
  There is NO WARRANTY, to the extent permitted by law.
-EOH
+EOF
 	}
-	__version() { printf "%s %s - noc-kit %s\n" "$__scriptbasename" "$VERSION" "$NOC_KIT_VERSION"; }
+	__version() { printf "%s - noc-kit %s\n" "$__scriptbasename" "$PACKAGE_VERSION"; }
 	__usage() { true; } # to override
+	__source() { cat "$0"; }
 	__info() { for i; do printf %s\\n "${__scriptbasename}: $i"; done; }
 	__warn() { __info "$@" >&2; }
 	__die() {
@@ -105,6 +108,7 @@ __lambda_func'
 			unset __arg
 	    fi
 	}
+#	__apply() {} #TODO
 #	__filter() {} #TODO
 #	__reduce() {} #TODO
 	__cleanup() {
@@ -115,39 +119,42 @@ __lambda_func'
 	    __map "rm -fR" "$@" 2>/dev/null
 	}
 
-	__utils_cleanup() {
+	__common_cleanup() {
 		__cleanup \
-"" \
 "__scriptname \
 __scriptbasename \
-__scriptdirname" \
-__usage_footer \
-__version \
+__scriptdirname \
+PACKAGE_VERSION" \
+"__usage_footer \
 __usage \
+__version \
+__source \
 __info \
 __warn \
 __die \
-__filter \
-__reduce \
-__list_create \
-__list_destroy \
-__list_append \
-__list_prepend \
-__list_insert \
-__list_pop \
-__list_shift \
-__list_splice \
-__list_length \
-__list_iterate \
-__list_slice \
-__list_reverse \
-__list_sort \
 __lambda \
-__map
+__map"
 "" \
 ""
+## TODO:
+#__apply \
+#__filter \
+#__reduce \
+#__list_create \
+#__list_destroy \
+#__list_append \
+#__list_prepend \
+#__list_insert \
+#__list_pop \
+#__list_shift \
+#__list_splice \
+#__list_length \
+#__list_iterate \
+#__list_slice \
+#__list_reverse \
+#__list_sort
 		unset -f __cleanup
-		unset -f __utils_cleanup
+		unset -f __common_cleanup
 	}
-	__utils_sourced=1
+	__common_sourced=1
 fi
