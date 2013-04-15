@@ -18,7 +18,5 @@ See INSTALL file for more details.
 
 TODO:
 
- * add --flags processing to showsigs
-  => add --source, --help, version and -- to showsigs
-   => add help2man functionality to automake
+ * add help2man functionality to automake
  * add --pattern to slaughter.sh
