@@ -55,5 +55,5 @@ AC_PATH_PROG(SHELL, sh)
 AC_SUBST([PACKAGE_VERSION])
 AC_SUBST([PKGLIBEXECDIR])
 AC_SUBST([SHOWSIGS_SOURCE])
-AC_CONFIG_FILES(README Makefile src/general/Makefile src/system-specific/Makefile src/app-specific/Makefile doc/Makefile tests/Makefile version.h src/general/showsigs.c src/general/nk_common.sh src/general/slaughter.sh src/system-specific/zfd.sh)
+AC_CONFIG_FILES(Makefile src/general/Makefile src/system-specific/Makefile src/app-specific/Makefile doc/Makefile tests/Makefile version.h src/general/showsigs.c src/general/nk_common.sh src/general/slaughter.sh src/system-specific/zfd.sh)
 AC_OUTPUT
