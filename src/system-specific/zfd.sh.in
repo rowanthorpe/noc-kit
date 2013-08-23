@@ -118,7 +118,7 @@ ddrescue_pkg() {
 					apt-get install gddrescue || __die "Unable to install gddrescue"
 				fi;;
 			purge)
-				if ! installed = "`dpkg --get-selections gddrescue | sed -e 's/^.*\t\([^ \t]\+\)$/\1/'`"; then
+				if ! test install = "`dpkg --get-selections gddrescue 2>/dev/null | sed -e 's/^.*\t\([^ \t]\+\)$/\1/'`"; then
 					apt-get purge gddrescue || __die "Unable to purge temporarily installed gddrescue"
 				fi;;
 			esac
