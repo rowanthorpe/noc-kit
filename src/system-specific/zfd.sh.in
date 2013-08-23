@@ -115,11 +115,11 @@ ddrescue_pkg() {
 			case "$1" in
 			install)
 				if ! dpkg -l gddrescue >/dev/null 2>&1; then
-					apt-get install gddrescue || __die "Unable to install gddrescue"
+					apt-get -y install gddrescue || __die "Unable to install gddrescue"
 				fi;;
 			purge)
 				if ! test install = "`dpkg --get-selections gddrescue 2>/dev/null | sed -e 's/^.*\t\([^ \t]\+\)$/\1/'`"; then
-					apt-get purge gddrescue || __die "Unable to purge temporarily installed gddrescue"
+					apt-get -y purge gddrescue || __die "Unable to purge temporarily installed gddrescue"
 				fi;;
 			esac
 		fi
