@@ -1,16 +1,10 @@
-2012-10-22  Rowan Thorpe  <rowan@rowanthorpe.com>
+2013-04-15  Rowan Thorpe  <rowan@rowanthorpe.com>
 
-* src/general/slaughter.sh: Created new file.
+* README.in: Removed finished TODO tasks
 
-* src/general/showsigs.c: Created new file.
+* autogen.sh: Added command so README exists in dist release
 
-* src/general/shell_common.sh: Created new file.
-
-2012-11-14  Rowan Thorpe  <rowan@rowanthorpe.com>
-
-* src/general/Makefile.am: Added creation of extensionless symlinks to install of slaughter.sh
-
-* Version set to 0.1.0
+* Various tidy-ups and fix the build-process
 
 2013-04-10  Rowan Thorpe  <rowan@rowanthorpe.com>
 
@@ -28,16 +22,20 @@
 * src/general/showsigs.c, src/general/slaughter.sh, src/general/nk_tests.sh,
   src/general/nk_utils.sh, src/system-specific/zfd.sh: Updated/improved copyright notices.
 
-2013-04-10(2)  Rowan Thorpe  <rowan@rowanthorpe.com>
-
 * configure.ac: Changed test file to be the existing lib file, from the old deleted one
 
 * .gitignore: Added C build and temp files
 
-2013-04-15  Rowan Thorpe  <rowan@rowanthorpe.com>
+2012-11-14  Rowan Thorpe  <rowan@rowanthorpe.com>
 
-* README.in: Removed finished TODO tasks
+* src/general/Makefile.am: Added creation of extensionless symlinks to install of slaughter.sh
 
-* autogen.sh: Added command so README exists in dist release
+* Version set to 0.1.0
 
-* Various tidy-ups and fix the build-process
+2012-10-22  Rowan Thorpe  <rowan@rowanthorpe.com>
+
+* src/general/slaughter.sh: Created new file.
+
+* src/general/showsigs.c: Created new file.
+
+* src/general/shell_common.sh: Created new file.

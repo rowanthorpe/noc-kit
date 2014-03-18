@@ -1,32 +1,6 @@
 NOC-Kit news
 ============
 
-CHANGES IN NOC-KIT VERSION 0.1.0:
-
-  NEW FEATURES:
-
-    * showsigs.c: new tool
-    
-    * slaughter.sh: new tool (and alias slaughterall.sh)
-
-  IMPROVEMENTS:
-
-    * None
-
-  CHANGES IN BEHAVIOUR:
-
-    * N/A
-
-  BUG FIXES:
-
-    * N/A
-
-  TODO (PLANNED):
-
-    * Manpages/Info pages
-
-    * better --help output
-
 CHANGES IN NOC-KIT VERSION 0.2.0:
 
   NEW FEATURES:
@@ -60,3 +34,29 @@ CHANGES IN NOC-KIT VERSION 0.2.0:
     * showsigs.sh: --help, --version, --source stub handling
 
     * showsigs.sh: use sigfullset to initialise
+
+CHANGES IN NOC-KIT VERSION 0.1.0:
+
+  NEW FEATURES:
+
+    * showsigs.c: new tool
+
+    * slaughter.sh: new tool (and alias slaughterall.sh)
+
+  IMPROVEMENTS:
+
+    * None
+
+  CHANGES IN BEHAVIOUR:
+
+    * N/A
+
+  BUG FIXES:
+
+    * N/A
+
+  TODO (PLANNED):
+
+    * Manpages/Info pages
+
+    * better --help output
