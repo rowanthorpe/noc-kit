@@ -14,7 +14,13 @@ Quick Install Instructions:
 
 (or use "tar xJf @PACKAGE_TARNAME@-@PACKAGE_VERSION@.tar.xz" above to extract an xz archive).
 
-See INSTALL file for more details.
+See INSTALL file for more details. Note that for test builds the author uses:
+
+ env CFLAGS="-D_POSIX_C_SOURCE=200809L -Wall -Wextra -pedantic-errors \
+             -Wno-overlength-strings -static -fomit-frame-pointer -O3 \
+             -march=native" ./configure
+ make CC=c99
+ make install
 
 TODO:
 
