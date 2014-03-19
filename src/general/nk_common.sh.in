@@ -38,7 +38,6 @@ if test -z "$__common_sourced"; then
 
     PACKAGE_VERSION="@PACKAGE_VERSION@"
     . "${__root_dir}/nk_logic_ops.sh" || { printf %s\\n "Failed to load nk_logic_ops.sh" >&2; return 1; }
-#    . "${__root_dir}/nk_lists.sh" || { printf %s\\n "Failed to load nk_lists.sh"; return 1; } #TODO
 
     __usage_footer() {
         cat <<EOF
@@ -127,19 +126,130 @@ unset __lambda_cmd
 __lambda_func
 unset -f __lambda_func'
     }
-    __map() {
-        __map_cmd="$1"
-        shift
-        if __notempty "$@"; then
-            for __arg do
-                eval "$__map_cmd" \""$__arg"\"
-            done
-            unset __map_cmd
-            unset __arg
+    #############
+    # __set can't be a function because it needs assign $@ in the present context,
+    # and alias is not the "right way" for non-interactive scripts either
+    __set='eval set --'
+    __pickle_arg() { printf '%s' "$1" | sed "s/'/'\\\\''/g"; }
+    __wrap_arg() { printf "'%s' \\\\\\n" "$1"; }
+    __wrap() { printf '%s\n \n' "$1"; }
+    __check_arg() {
+        func="$1"
+        ca_fail_msg="$2"
+        arg="$3"
+        if ! $func "$arg"; then
+            __warnf 'Failed __check_arg() using function "%s" with arg "%s".\n' "$func" "$arg"
+            __warn "$ca_fail_msg"
+            return 1
         fi
     }
-#    __apply() {} #TODO
-#    __filter() {} #TODO
+    __check() {
+        func="$1"
+        cas_fail_msg="$2"
+        shift 2
+        for arg; do
+            if ! __check_arg "$func" "$cas_fail_msg" "$arg"; then
+                __warn "Failed __check()."
+                return 1
+            fi
+        done
+    }
+    __filter_arg() {
+        func="$1"
+        fa_fail_msg="$2"
+        arg="$3"
+        if ! $func "$arg"; then
+            __warnf 'Failed __filter_arg() using function "%s" with arg "%s".\n' "$func" "$arg"
+            __warn "$fa_fail_msg"
+            return 1
+        fi
+    }
+    __apply_arg() {
+        __retval=0
+        __func="$1"
+        __arg="$2"
+        if ! eval "$__func \"\$__arg\""; then
+            __warnf 'Failed __apply_arg() using function "%s" with arg "%s".\n' "$__func" "$__arg"
+            __retval=1
+        fi
+        unset __func
+        unset __arg
+        if test 1 = $__retval; then unset __retval; return 1; else unset __retval; return 0; fi
+    }
+    __apply() {
+        __retval=0
+        __func="$1"
+        shift
+        test -n "$__func" || __func="true"
+        if ! {
+            for __arg; do
+                __apply_arg "$__func" "$__arg" || { __retval=1; break; }
+            done
+            test 0 = $retval
+        }; then
+            __warn "Failed __apply()."
+            __retval=1
+        else
+            __wrap "$list_string"
+        fi
+        unset __func
+        unset __arg
+        if test 1 = $__retval; then unset __retval; return 1; else unset __retval; return 0; fi
+    }
+    __map() {
+        __retval=0
+        __func="$1"
+        shift
+        test -n "$__func" || __func="printf %s"
+        if ! __list_string="$(
+            for __arg; do
+                __arg="$(__apply "$__func" "$__arg")" || { __retval=1; break; }
+                __wrap_arg "$(__pickle_arg "$__arg")"
+            done
+            test 0 = $__retval
+        )"; then
+            __warn "Failed __map()."
+            __retval=1
+            unset __arg
+        else
+            __wrap "$list_string"
+        fi
+        unset __func
+        unset __list_string
+        if test 1 = $__retval; then unset __retval; return 1; else unset __retval; return 0; fi
+    }
+    __pickle() {
+        if ! __filter "" "" "$@"; then
+            __warn "Failed __pickle()."
+            return 1
+        fi
+    }
+    __file_writable() {
+        filename="$1"
+        fw_fail_msg=
+        if test -e "$filename"; then
+            if ! test -f "$filename"; then
+                fw_fail_msg='"%s" already exists and is not a regular file.'
+            else
+                if ! test -w "$filename"; then
+                    fw_fail_msg='"%s" is not writable.'
+                fi
+            fi
+        else
+            file_dirname="$(dirname "$filename")"
+            if ! test -d "$file_dirname" || ! test -x "$file_dirname" || ! test -w "$file_dirname"; then
+                fw_fail_msg='Unable to create "%s" (inadequate permissions?).'
+            fi
+        fi
+        if test -n "$fw_fail_msg"; then
+            __warnf "$fw_fail_msg\n" "$filename"
+            __warn "Failed __file_writable()."
+            return 1
+        fi
+    }
+    __file_exists_tag() { test -e "$1"; printf '%s' "${1}:$?"; }
+
+#############
 #    __reduce() {} #TODO
     __cleanup() {
         __map unset $1
@@ -158,14 +268,27 @@ PACKAGE_VERSION" \
 __usage \
 __version \
 __source \
+__infof \
 __info \
+__warnf \
 __warn \
+__sub_die \
+__dief \
 __die \
 __lambda \
-__map"
+__pickle_arg \
+__wrap_arg \
+__wrap \
+__check_arg \
+__check \
+__filter_arg \
+__apply_arg \
+__apply \
+__map \
+__pickle \
+__file_writable \
+__file_exists_tag"
 ## TODO:
-#__apply \
-#__filter \
 #__reduce \
 #__list_create \
 #__list_destroy \
