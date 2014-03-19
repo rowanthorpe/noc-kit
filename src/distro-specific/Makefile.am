@@ -1,3 +1,5 @@
+.POSIX:
+
 dist_bin_SCRIPTS = zfd.sh
 
 install-data-hook:

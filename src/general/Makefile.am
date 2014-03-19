@@ -1,3 +1,5 @@
+.POSIX:
+
 bin_PROGRAMS = showsigs
 dist_showsigs_SOURCES = showsigs.c
 dist_bin_SCRIPTS = slaughter.sh
