@@ -74,7 +74,7 @@ EOF
         exit $__exitval
     }
     __lambda() {
-        test $# = 2 || { printf %s\\n "Syntax error in __lambda()" >&2; return 1; }
+        test $# = 2 || { __warn "Syntax error: incorrect number of args to __lambda()."; return 1; }
         __lambda_vars="$(printf %s "$1" | tr "," " ")"
         __lambda_varsnum="$(printf %s "$__lambda_vars" | wc -w)"
         __lambda_cmd="$2"
@@ -139,8 +139,7 @@ __info \
 __warn \
 __die \
 __lambda \
-__map" \
-""
+__map"
 ## TODO:
 #__apply \
 #__filter \
