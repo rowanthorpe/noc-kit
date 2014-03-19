@@ -91,14 +91,14 @@ while test -n "$1"; do
         continue;;
     --duration|-d)
         if test -z "$2" || printf "$2" | grep -q '[^0-9]' || test $2 -gt 255 || test $2 -lt 1; then
-            __die -u "Invalid argument given for \"duration\" option."
+            __dief -u 'Invalid argument given for "%s" option.\n' "$1"
         fi
         __duration="$2"
         shift 2
         continue;;
     --repetitions|-r)
         if test -z "$2" || printf "$2" | grep -q '[^0-9]' || test $2 -gt 255 || test $2 -lt 1; then
-            __die -u "Invalid argument given for \"repetitions\" option."
+            __dief -u 'Invalid argument given for "%s" option.\n' "$1"
         fi
         __repetitions="$2"
         shift 2
@@ -112,7 +112,7 @@ while test -n "$1"; do
         shift
         break;;
     -*)
-        __die -u "Unrecognised option "$1" specified.";;
+        __dief -u 'Unrecognised option "%s" specified.\n' "$1";;
     *)
         break;;
     esac
@@ -135,33 +135,33 @@ slaughterall|slaughterall.sh)
     __check_cmd() { pgrep -c "^${@}\$"; }
     __id_type=procname;;
 *)
-    __die -u "Command form \"$__scriptbasename\" unknown.";;
+    __dief -u 'Command form "%s" unknown.\n' "$__scriptbasename";;
 esac
 
 # Main
 for __arg in "$@"; do
     __check_cmd "$__arg" >/dev/null 2>&1 || {
-        __warn "$__id_type \"$__arg\" doesn't exist."
-        __exitval=1
-        continue 1
+        __warnf "%s \"%s\" doesn't exist.\n" "$__id_type" "$__arg"
+    __exitval=1
+    continue 1
     }
     while test $__count -lt $__repetitions; do
         __kill_cmd 15 "$__arg" >/dev/null 2>&1
         sleep $__duration
         __check_cmd "$__arg" >/dev/null 2>&1 || {
-            __warn "Succeeded: __kill_cmd 15 \"$__arg\"."
+            __warnf 'Succeeded: __kill_cmd 15 "%s".\n' "$__arg"
             continue 2
         }
-        __warn "Failed: __kill_cmd 15 \"$__arg\"."
-        __count=`eval __count + 1 `
+        __warnf 'Failed: __kill_cmd 15 "%s".\n' "$__arg"
+        __count=`eval __count + 1`
     done
     __kill_cmd 9 "$__arg" >/dev/null 2>&1
     sleep $__duration
     if __check_cmd "$__arg" >/dev/null 2>&1; then
-        __die "Failed: __kill_cmd 9 \"$__arg\"."
+        __dief 'Failed: __kill_cmd 9 "%s".\n' "$__arg"
         __exitval=1
     else
-        __warn "Succeeded: __kill_cmd 9 \"$__arg\"."
+        __warnf 'Succeeded: __kill_cmd 9 "%s".\n' "$__arg"
     fi
 done
 exit $__exitval

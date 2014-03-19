@@ -93,20 +93,20 @@ EOH
     __usage_footer
 }
 setup() {
-    test "`id -u`" = 0 || __die -u "Must be run as root"
+    test "`id -u`" = 0 || __die -u "Must be run as root."
     test $# = 2 || test $# = 3 || __die -u "You must specify the device-path and filename prefix (and optional datetime)."
     block_device="$1"
     device_nickname="$2"
     date_time="$3"
-    test -b "$block_device" || __die -u "\"$_block_device\" appears not to be a block device."
-    printf %s "$device_nickname" | grep -q '[^a-zA-Z0-9_]' || __die -u "\"$_device_nickname\" includes invalid characters ([^a-zA-Z0-9_])."
+    test -b "$block_device" || __dief -u '"%s" appears not to be a block device.\n' "$block_device"
+    printf %s "$device_nickname" | grep -q '[^a-zA-Z0-9_]' || __dief -u '"%s" includes invalid characters ([^a-zA-Z0-9_]).\n' "$device_nickname"
     if test -n "$date_time"; then
         logdir="log-${device_nickname}-${date_time}"
-        test -d "$logdir" && test -r "$logdir" && test -w "$logdir" || __die -u "\"$logdir\" is not a read-writable directory."
+        test -d "$logdir" && test -r "$logdir" && test -w "$logdir" || __dief -u '"%s" is not a read-writable directory.\n' "$logdir"
     else
-        logdir="log-${device_nickname}-`date +%Y_%m_%d-%H_%M_%S`" || __die -u "Problem invoking \"date\"."
-        ! test -e "$logdir" || __die "\"$logdir\" already exists."
-        mkdir "$logdir" || __die "Problem creating \"$logdir\"."
+        logdir="log-${device_nickname}-`date +%Y_%m_%d-%H_%M_%S`" || __die -u 'Problem invoking "date".'
+        ! test -e "$logdir" || __dief '"%s" already exists.\n' "$logdir"
+        mkdir "$logdir" || __dief 'Problem creating "%s".\n' "$logdir"
         printf 'Completed phases:\n' >"${logdir}/progress.log"
     fi
 }
@@ -211,7 +211,7 @@ while test -n "$1"; do
         shift
         break;;
     -*)
-        __die 'Unrecognised option "$1" specified.';;
+        __dief -u 'Unrecognised option "%s" specified.\n' "$1";;
     *)
     break;;
     esac
