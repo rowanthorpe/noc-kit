@@ -50,6 +50,7 @@ m4_changequote([,])
 AC_MSG_RESULT(["$PKGLIBEXECDIR"])
 AC_MSG_CHECKING([contents of showsigs.c.in])
 SHOWSIGS_SOURCE=["\"`sed -e 's/\\t/    /g; s/"/\\\\"/g; s/$/\\\\n/g' $srcdir/src/general/showsigs.c.in | tr -d '\\n'`\""]
+MINIPRLIMIT_SOURCE=["\"`sed -e 's/\\t/    /g; s/"/\\\\"/g; s/$/\\\\n/g' $srcdir/src/system-specific/_miniprlimit.c.in | tr -d '\\n'`\""]
 AC_MSG_RESULT([done])
 AC_PATH_PROG(SHELL, sh)
 AC_SUBST([PACKAGE_VERSION])
@@ -59,5 +60,6 @@ AC_SUBST([PACKAGE_NAME])
 AC_SUBST([PACKAGE_STRING])
 AC_SUBST([PKGLIBEXECDIR])
 AC_SUBST([SHOWSIGS_SOURCE])
-AC_CONFIG_FILES(README Makefile src/general/Makefile src/system-specific/Makefile src/distro-specific/Makefile src/app-specific/Makefile doc/Makefile tests/Makefile version.h src/general/showsigs.c src/general/nk_common.sh src/general/nk_logic_ops.sh src/general/slaughter.sh src/distro-specific/zfd.sh)
+AC_SUBST([MINIPRLIMIT_SOURCE])
+AC_CONFIG_FILES(README Makefile src/general/Makefile src/system-specific/Makefile src/distro-specific/Makefile src/app-specific/Makefile doc/Makefile tests/Makefile version.h src/general/showsigs.c src/system-specific/_miniprlimit.c src/general/nk_common.sh src/general/nk_logic_ops.sh src/general/slaughter.sh src/general/tryedit.sh src/system-specific/miniprlimit.sh src/distro-specific/zfd.sh)
 AC_OUTPUT

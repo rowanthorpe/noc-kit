@@ -6,16 +6,16 @@
 #
 ###########
 #
-# Copyright © 2012, 2013 Rowan Thorpe
+# Copyright © 2012, 2013, 2014 Rowan Thorpe
 #
-# This file is part of NOC-Kit.
+# This file is part of @PACKAGE_NAME@.
 #
-# NOC-Kit is free software: you can redistribute it and/or modify
+# @PACKAGE_NAME@ is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# NOC-Kit is distributed in the hope that it will be useful,
+# @PACKAGE_NAME@ is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU Affero General Public License for more details.
@@ -25,18 +25,18 @@
 #
 ###########
 #
-# For bug-reports please email: rowan *at* rowanthorpe _DOT_ com
-# (obviously, fix the address with the appropriate symbols and no spaces).
+# Report bugs to @PACKAGE_BUGREPORT@
 
 # Config
 __root_dir="@PKGLIBEXECDIR@"
 . "${__root_dir}/nk_common.sh" || {
-	printf 'Failed sourcing nk_common.sh. Stopping.\n' >&2
-	exit 1
+    printf "Failed sourcing nk_common.sh. Stopping.\n" >&2
+    exit 1
 }
 
+# Functions
 __usage() {
-	cat <<EOH
+    cat <<EOH
 Usage: $__scriptbasename [OPTIONS] file [file] ...
 
 Locks and edits files, so anyone else who uses "$__scriptbasename" on any of the same
@@ -54,35 +54,35 @@ OPTIONS:
  --editor|-e          : Set the editor to use (overrides \$EDITOR).
  --                   : End option processing.
 
-DESCRIPTION:
- TODO
+ Copyright © 2012, 2013, 2014 Rowan Thorpe.
 EOH
-	__usage_footer
+    __usage_footer
 }
 
+# Getopts
 __duration=1
 __repetitions=3
 __verbose=1
 __editor="$EDITOR"
 while test $# -gt 0; do
     case "$1" in
-	--help|-h|--usage)
-		__usage
-		exit 0;;
-	--version|-V|--about)
-		__version
-		exit 0;;
-	--source|-S)
-		__source
-		exit 0;;
-	--quiet|-q)
-		__verbose=0
-		shift
-		continue;;
+    --help|-h|--usage)
+        __usage
+        exit 0;;
+    --version|-V|--about)
+        __version
+        exit 0;;
+    --source|-S)
+        __source
+        exit 0;;
+    --quiet|-q)
+        __verbose=0
+        shift
+        continue;;
     -e|--editor)
-		if test -z "$2"; then
-			__dief -u 1 'Invalid argument "%s" given for option "%s".\n' "$2" "$1"
-		fi
+        if test -z "$2"; then
+            __dief -u 1 'Invalid argument "%s" given for option "%s".\n' "$2" "$1"
+        fi
         __editor="$2"
         shift 2
         continue;;

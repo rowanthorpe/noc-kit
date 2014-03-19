@@ -1,0 +1,487 @@
+#!@SHELL@
+
+# miniprlimit.sh: see --help option for details
+#
+# NB: This aims to be POSIX.1-2008 compliant
+#
+###########
+#
+# Copyright © 2014 Rowan Thorpe
+#
+# This file is part of @PACKAGE_NAME@.
+#
+# @PACKAGE_NAME@ is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# @PACKAGE_NAME@ is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+###########
+#
+# Report bugs to @PACKAGE_BUGREPORT@
+
+# Config
+__root_dir="@PKGLIBEXECDIR@"
+. "${__root_dir}/nk_common.sh" || {
+    printf "Failed sourcing nk_common.sh. Stopping.\n" >&2
+    exit 1
+}
+
+# Functions
+__usage() {
+    cat <<EOH
+Usage: $__scriptbasename [OPTIONS] ARGS
+
+A wrapper script for the minimal C tool _miniprlimit which sets limits on
+running processes. This wrapper makes _miniprlimit accept the same options
+and syntax as the full prlimit tool which can be found in util-linux>=2.21.
+Due to being a minimal tool it ignores several non-essential options though.
+
+ARGS:
+
+   <soft>:<hard> Specify both limits
+   <soft>: Specify only the soft limit
+   :<hard> Specify only the hard limit
+   <value> Specify both soft and hard limits to the same value
+
+OPTIONS:
+
+ -h, --help:
+          Display help text and exit.
+
+ -V, --version:
+          Display version information and exit.
+
+ -S, --source:
+          Display source code for this tool.
+
+ -p, --pid:
+          Specify the process id, if none is given, it will use the running
+          process.
+
+ -o, --output list:    -- NOT USED IN THIS TOOL
+          Define the output columns to use. If no output arrangement is
+          specified, then a default set is used. Use --help to get list of all
+          supported columns.
+
+ --verbose:            -- NOT USED IN THIS TOOL
+          Verbose mode.
+
+ --raw:                -- NOT USED IN THIS TOOL
+          Use the raw output format.
+
+ --noheadings:         -- NOT USED IN THIS TOOL
+          Do not print a header line.
+
+RESOURCE OPTIONS:
+
+ -c, --core[=limits]:
+          Maximum size of a core file.
+
+ -d, --data[=limits]:
+          Maximum data size.
+
+ -e, --nice[=limits]:
+          Maximum nice priority allowed to raise.
+
+ -f, --fsize[=limits]:
+          Maximum file size.
+
+ -i, --sigpending[=limits]:
+          Maximum number of pending signals.
+
+ -l, --memlock[=limits]:
+          Maximum locked-in-memory address space.
+
+ -m, --rss[=limits]:
+          Maximum Resident Set Size (RSS).
+
+ -n, --nofile[=limits]:
+          Maximum number of open files.
+
+ -q, --msgqueue[=limits]:
+          Maximum number of bytes in POSIX message queues.
+
+ -r, --rtprio[=limits]:
+          Maximum real-time priority.
+
+ -s, --stack[=limits]:
+          Maximum size of the stack.
+
+ -t, --cpu[=limits]:
+          CPU time, in seconds.
+
+ -u, --nproc[=limits]:
+          Maximum number of processes.
+
+ -v, --as[=limits]:
+          Address space limit.
+
+ -x, --locks[=limits]:
+          Maximum number of file locks held.
+
+ -y, --rttime[=limits]:
+          Timeout for real-time tasks.
+
+NOTES
+
+ In contrast to the full prlimit tool the so-called "commands" are not
+ implemented and some options are ignored. This is just a stopgap mini-tool
+ until the full tool is in systems by default. See the full prlimit tool's
+ manpage online for examples, etc. I haven't seen example output from the
+ full tool, so haven't tried to mimic its format. If anyone wants to provide
+ me with that I can tweak the format to match it better.
+
+ Although bug-reports are of course welcome, please don't send "feature
+ requests" - for that install the full tool from util-linux>=2.21
+
+RATIONALE:
+
+ My primary aim in implementing _miniprlimit and this wrapper was to gain the
+ most important parts of prlimit's functionality in a tidy, "packagable" way,
+ on a system running Debian Wheezy, without having to backport all of
+ Util-Linux-2.21 (Wheezy has probably eternally settled on 2.20, so the only
+ way to get prlimit in a Stable Debian branch is to wait for Jessie to become
+ Stable...
+
+TODO:
+
+ * (I'm sure I'll think of something...)
+
+ Copyright © 2014 Rowan Thorpe.
+EOH
+    __usage_footer
+}
+
+for param in pid CORE DATA NICE FSIZE SIGPENDING MEMLOCK RSS NOFILE MSGQUEUE RTPRIO STACK CPU NPROC AS LOCKS RTTIME; do
+    eval "${param}=; show_${param}=;"
+done
+
+found_one=
+while test $# -gt 0; do
+    case "$1" in
+    --pid|-p)
+        pid="$2"
+        shift 2
+        continue;;
+    --output|-o)
+        # ignored as we won't use it in the mini tool
+        shift 2
+        continue;;
+    --help|-h)
+        __usage
+        exit 0;;
+    --version|-V)
+        __version
+        exit 0;;
+    --source|-S)
+        __source
+        exit 0;;
+    --verbose)
+        # ignored as we won't use it in the mini tool
+        shift
+        continue;;
+    --raw)
+        # ignored as we won't use it for now
+        shift
+        continue;;
+    --noheadings)
+        # ignored as we won't use it for now
+        shift
+        continue;;
+    --core)
+        found_one=1
+        show_CORE=1
+        shift
+        continue;;
+    --core=*)
+        found_one=1
+        show_CORE=1
+        CORE="${1#*=}"
+        shift
+        continue;;
+    -c)
+        found_one=1
+        show_CORE=1
+        case "$2" in -*|"") CORE=; shift;; *) CORE="$2"; shift 2;; esac
+        continue;;
+    --data)
+        found_one=1
+        show_DATA=1
+        shift
+        continue;;
+    --data=*)
+        found_one=1
+        show_DATA=1
+        DATA="${1#*=}"
+        shift
+        continue;;
+    -d)
+        found_one=1
+        show_DATA=1
+        case "$2" in -*|"") DATA=; shift;; *) DATA="$2"; shift 2;; esac
+        continue;;
+    --nice)
+        found_one=1
+        show_NICE=1
+        shift
+        continue;;
+    --nice=*)
+        found_one=1
+        show_NICE=1
+        NICE="${1#*=}"
+        shift
+        continue;;
+    -e)
+        found_one=1
+        show_NICE=1
+        case "$2" in -*|"") NICE=; shift;; *) NICE="$2"; shift 2;; esac
+        continue;;
+    --fsize)
+        found_one=1
+        show_FSIZE=1
+        shift
+        continue;;
+    --fsize=*)
+        found_one=1
+        show_FSIZE=1
+        FSIZE="${1#*=}"
+        shift
+        continue;;
+    -f)
+        found_one=1
+        show_FSIZE=1
+        case "$2" in -*|"") FSIZE=; shift;; *) FSIZE="$2"; shift 2;; esac
+        continue;;
+    --sigpending)
+        found_one=1
+        show_SIGPENDING=1
+        shift
+        continue;;
+    --sigpending=*)
+        found_one=1
+        show_SIGPENDING=1
+        SIGPENDING="${1#*=}"
+        shift
+        continue;;
+    -i)
+        found_one=1
+        show_SIGPENDING=1
+        case "$2" in -*|"") SIGPENDING=; shift;; *) SIGPENDING="$2"; shift 2;; esac
+        continue;;
+    --memlock)
+        found_one=1
+        show_MEMLOCK=1
+        shift
+        continue;;
+    --memlock=*)
+        found_one=1
+        show_MEMLOCK=1
+        MEMLOCK="${1#*=}"
+        shift
+        continue;;
+    -l)
+        found_one=1
+        show_MEMLOCK=1
+        case "$2" in -*|"") MEMLOCK=; shift;; *) MEMLOCK="$2"; shift 2;; esac
+        continue;;
+    --rss)
+        found_one=1
+        show_RSS=1
+        shift
+        continue;;
+    --rss=*)
+        found_one=1
+        show_RSS=1
+        RSS="${1#*=}"
+        shift
+        continue;;
+    -m)
+        found_one=1
+        show_RSS=1
+        case "$2" in -*|"") RSS=; shift;; *) RSS="$2"; shift 2;; esac
+        continue;;
+    --nofile)
+        found_one=1
+        show_NOFILE=1
+        shift
+        continue;;
+    --nofile=*)
+        found_one=1
+        show_NOFILE=1
+        NOFILE="${1#*=}"
+        shift
+        continue;;
+    -n)
+        found_one=1
+        show_NOFILE=1
+        case "$2" in -*|"") NOFILE=; shift;; *) NOFILE="$2"; shift 2;; esac
+        continue;;
+    --msgqueue)
+        found_one=1
+        show_MSGQUEUE=1
+        shift
+        continue;;
+    --msgqueue=*)
+        found_one=1
+        show_MSGQUEUE=1
+        MSGQUEUE="${1#*=}"
+        shift
+        continue;;
+    -q)
+        found_one=1
+        show_MSGQUEUE=1
+        case "$2" in -*|"") MSGQUEUE=; shift;; *) MSGQUEUE="$2"; shift 2;; esac
+        continue;;
+    --rtprio)
+        found_one=1
+        show_RTPRIO=1
+        shift
+        continue;;
+    --rtprio=*)
+        found_one=1
+        show_RTPRIO=1
+        RTPRIO="${1#*=}"
+        shift
+        continue;;
+    -r)
+        found_one=1
+        show_RTPRIO=1
+        case "$2" in -*|"") RTPRIO=; shift;; *) RTPRIO="$2"; shift 2;; esac
+        continue;;
+    --stack)
+        found_one=1
+        show_STACK=1
+        shift
+        continue;;
+    --stack=*)
+        found_one=1
+        show_STACK=1
+        STACK="${1#*=}"
+        shift
+        continue;;
+    -s)
+        found_one=1
+        show_STACK=1
+        case "$2" in -*|"") STACK=; shift;; *) STACK="$2"; shift 2;; esac
+        continue;;
+    --cpu)
+        found_one=1
+        show_CPU=1
+        shift
+        continue;;
+    --cpu=*)
+        found_one=1
+        show_CPU=1
+        CPU="${1#*=}"
+        shift
+        continue;;
+    -t)
+        found_one=1
+        show_CPU=1
+        case "$2" in -*|"") CPU=; shift;; *) CPU="$2"; shift 2;; esac
+        continue;;
+    --nproc)
+        found_one=1
+        show_NPROC=1
+        shift
+        continue;;
+    --nproc=*)
+        found_one=1
+        show_NPROC=1
+        NPROC="${1#*=}"
+        shift
+        continue;;
+    -u)
+        found_one=1
+        show_NPROC=1
+        case "$2" in -*|"") NPROC=; shift;; *) NPROC="$2"; shift 2;; esac
+        continue;;
+    --as)
+        found_one=1
+        show_AS=1
+        shift
+        continue;;
+    --as=*)
+        found_one=1
+        show_AS=1
+        AS="${1#*=}"
+        shift
+        continue;;
+    -v)
+        found_one=1
+        show_AS=1
+        case "$2" in -*|"") AS=; shift;; *) AS="$2"; shift 2;; esac
+        continue;;
+    --locks)
+        found_one=1
+        show_LOCKS=1
+        shift
+        continue;;
+    --locks=*)
+        found_one=1
+        show_LOCKS=1
+        LOCKS="${1#*=}"
+        shift
+        continue;;
+    -x)
+        found_one=1
+        show_LOCKS=1
+        case "$2" in -*|"") LOCKS=; shift;; *) LOCKS="$2"; shift 2;; esac
+        continue;;
+    --rttime)
+        found_one=1
+        show_RTTIME=1
+        shift
+        continue;;
+    --rttime=*)
+        found_one=1
+        show_RTTIME=1
+        RTTIME="${1#*=}"
+        shift
+        continue;;
+    -y)
+        found_one=1
+        show_RTTIME=1
+        case "$2" in -*|"") RTTIME=; shift;; *) RTTIME="$2"; shift 2;; esac
+        continue;;
+    --)
+        shift
+        break;;
+    -*)
+        __dief -u 1 'Unrecognised option "%s" specified.\n' "$1";;
+    *)
+        break;;
+    esac
+done
+if test -z "$pid"; then
+    PPID="${PPID:-`ps -o ppid= $$`}"
+    pid=$PPID
+fi
+test -n "$found_one" || __die -u 1 '* No usable parameter specified.\n'
+
+for param in CORE DATA NICE FSIZE SIGPENDING MEMLOCK RSS NOFILE MSGQUEUE RTPRIO STACK CPU NPROC AS LOCKS RTTIME; do
+    invalid=
+    eval "\
+if test -n \"\$show_${param}\"; then
+    case \"\$$param\" in *:*:*) _invalid=1;; esac
+    case \"\${${param}#*:}\" in unlimited|[0-9]|[0-9][0-9]|[0-9][0-9][0-9]|[0-9][0-9][0-9][0-9]|[0-9][0-9][0-9][0-9][0-9]|[0-9][0-9][0-9][0-9][0-9][0-9]|\"\") :;; *) invalid=1;; esac
+    case \"\${${param}%:*}\" in unlimited|[0-9]|[0-9][0-9]|[0-9][0-9][0-9]|[0-9][0-9][0-9][0-9]|[0-9][0-9][0-9][0-9][0-9]|[0-9][0-9][0-9][0-9][0-9][0-9]|\"\") :;; *) invalid=1;; esac
+    test -z \"\$invalid\" || __dief -u 1 '* Invalid parameter \"\$param\".\\n'
+    case \"\$$param\" in
+        \"\") _miniprlimit $param \$pid;;
+        :*) _miniprlimit $param \$pid \"\" \"\${${param}#:}\";;
+        *:) _miniprlimit $param \$pid \"\${${param}%:}\" \"\";;
+        *:*) _miniprlimit $param \$pid \"\${${param}%:*}\" \"\${${param}#*:}\";;
+        *) _miniprlimit $param \$pid \"\${${param}}\" \"\${${param}}\";;
+    esac
+fi\
+"
+done

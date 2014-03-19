@@ -1,0 +1,192 @@
+#ifdef HAVE_CONFIG_H
+#    include "config.h"
+#endif
+#define _GNU_SOURCE
+#define _FILE_OFFSET_BITS 64
+#include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/resource.h>
+#include <string.h>
+#include <inttypes.h>
+#include "version.h"
+
+#define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); } while (0)
+
+/* _miniprlimit.c: A minimalist implementation of viewing and manipulating
+                   limit values on processes running under Linux >= 2.6.36
+                   using its prlimit functionality.
+
+ For something which behaves closer to the util-linux prlimit tool, use the miniprlimit
+ wrapper shell-script for this. Keep in mind many operations are not possible without root
+ permissions. See "miniprlimit --help" for details.
+
+ This was created as a small bare-bones tool to keep Debian Wheezy users happy because
+ util-linux >= 2.21 will probably only be default in Jessie. Creating this tool was easier
+ than creating and maintaining a backport of the entire util-linux package(!).
+
+ ----
+
+ Copyright © 2014 Rowan Thorpe
+
+ This file is part of @PACKAGE_NAME@.
+
+ @PACKAGE_NAME@ is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ @PACKAGE_NAME@ is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU Affero General Public License for more details.
+
+ You should have received a copy of the GNU Affero General Public License
+ along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+ ----
+
+ Report bugs to @PACKAGE_BUGREPORT@
+
+*/
+
+void _help(FILE *stream) {
+	fprintf(stream, "%s\n", "Usage: _miniprlimit [--help|-h] [--version|-V] [--source|-S] [--] \n         <AS|CORE|CPU|DATA|FSIZE|LOCKS|MEMLOCK|MSGQUEUE|NOFILE|NICE|NPROC|RSS|RTPRIO|RTTIME|SIGPENDING|STACK|OFILE|NLIMITS> <pid> [<new-soft-limit> <new-hard-limit>]\n  A minimalist implementation of viewing and manipulating limit values on\nprocesses running under Linux >= 2.6.36 using its prlimit functionality.");
+}
+void _version(FILE *stream) {
+	fprintf(stream, "_miniprlimit - @PACKAGE_STRING@\nCopyright (C) 2014 Rowan Thorpe.\nLicense AGPLv3+: GNU AGPL version 3 or later <http://gnu.org/licenses/agpl.html>\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.\n");
+}
+void _source(FILE *stream) {
+	fprintf(stream, "%s\n", @MINIPRLIMIT_SOURCE@);
+}
+int main(int argc, char *argv[]) {
+	struct rlimit old, new;
+	int proctype;
+	unsigned int count;
+	pid_t pid;
+
+	if (argc > 1)
+		for (count = 1; count < (unsigned int)argc; count++) {
+			if (argv[count][0] != '-' || strncmp(argv[count], "--", 3) == 0)
+				break;
+			if (strncmp(argv[count], "-h", 3) == 0 || strncmp(argv[count], "--help", 7) == 0) {
+				_help(stdout);
+				exit(0);
+			}
+			if (strncmp(argv[count], "-V", 3) == 0 || strncmp(argv[count], "--version", 10) == 0) {
+				_version(stdout);
+				exit(0);
+			}
+			if (strncmp(argv[count], "-S", 3) == 0 || strncmp(argv[count], "--source", 9) == 0) {
+				_source(stdout);
+				exit(0);
+			}
+			fprintf(stderr, "Invalid option specified: %s\n", argv[count]);
+			exit(1);
+		}
+
+	if (!(argc == 3 || argc == 5)) {
+		_help(stderr);
+		exit(EXIT_FAILURE);
+	}
+
+	if (strncmp(argv[1], "AS", 3) == 0) {
+		proctype = RLIMIT_AS;
+	} else if (strncmp(argv[1], "CORE", 5) == 0) {
+		proctype = RLIMIT_CORE;
+	} else if (strncmp(argv[1], "CPU", 4) == 0) {
+		proctype = RLIMIT_CPU;
+	} else if (strncmp(argv[1], "DATA", 5) == 0) {
+		proctype = RLIMIT_DATA;
+	} else if (strncmp(argv[1], "FSIZE", 6) == 0) {
+		proctype = RLIMIT_FSIZE;
+	} else if (strncmp(argv[1], "LOCKS", 6) == 0) {
+		proctype = RLIMIT_LOCKS;
+	} else if (strncmp(argv[1], "MEMLOCK", 8) == 0) {
+		proctype = RLIMIT_MEMLOCK;
+	} else if (strncmp(argv[1], "MSGQUEUE", 9) == 0) {
+		proctype = RLIMIT_MSGQUEUE;
+	} else if (strncmp(argv[1], "NOFILE", 7) == 0) {
+		proctype = RLIMIT_NOFILE;
+	} else if (strncmp(argv[1], "NICE", 5) == 0) {
+		proctype = RLIMIT_NICE;
+	} else if (strncmp(argv[1], "NPROC", 6) == 0) {
+		proctype = RLIMIT_NPROC;
+	} else if (strncmp(argv[1], "RSS", 4) == 0) {
+		proctype = RLIMIT_RSS;
+	} else if (strncmp(argv[1], "RTPRIO", 7) == 0) {
+		proctype = RLIMIT_RTPRIO;
+	} else if (strncmp(argv[1], "RTTIME", 7) == 0) {
+		proctype = RLIMIT_RTTIME;
+	} else if (strncmp(argv[1], "SIGPENDING", 11) == 0) {
+		proctype = RLIMIT_SIGPENDING;
+	} else if (strncmp(argv[1], "STACK", 5) == 0) {
+		proctype = RLIMIT_STACK;
+/* TODO: check if these even exist (copied them from a blogpost somewhere)...
+	} else if (strncmp(argv[1], "OFILE", 6) == 0) {
+		proctype = RLIMIT_OFILE;
+	} else if (strncmp(argv[1], "NLIMITS", 8) == 0) {
+		proctype = RLIMIT_NLIMITS;
+*/
+	} else {
+		fprintf(stderr, "Unknown RLIMIT parameter specified: %s\n", argv[1]);
+		exit(EXIT_FAILURE);
+	}
+	pid = atoi(argv[2]); /* PID of target process */
+
+	printf("Output for %s:\n", argv[1]);
+	if (argc == 5) {
+		if ((argv[3][0] == '\0') || (argv[4][0] == '\0'))
+			if (prlimit(pid, proctype, NULL, &old) == -1)
+				errExit("prlimit-2");
+		if (argv[3][0] == '\0')
+			new.rlim_cur = old.rlim_cur;
+		else if (strncmp(argv[3], "unlimited", 10) == 0)
+			new.rlim_cur = RLIM_INFINITY;
+		else
+			new.rlim_cur = atoi(argv[3]);
+		if (argv[4][0] == '\0')
+			new.rlim_max = old.rlim_max;
+		else if (strncmp(argv[4], "unlimited", 10) == 0)
+			new.rlim_max = RLIM_INFINITY;
+		else
+			new.rlim_max = atoi(argv[4]);
+		if ((argv[3][0] == '\0') || (argv[4][0] == '\0')) {
+			if (prlimit(pid, proctype, &new, NULL) == -1)
+				errExit("prlimit-1");
+		} else if (prlimit(pid, proctype, &new, &old) == -1)
+			errExit("prlimit-1");
+	} else if (prlimit(pid, proctype, NULL, &old) == -1)
+		errExit("prlimit-2");
+
+	if (argc == 5)
+		printf(" Previous limits: soft=");
+	else
+		printf(" Limits: soft=");
+	if (old.rlim_cur == RLIM_INFINITY)
+		printf("unlimited");
+	else
+		printf("%" PRIu64, (uint64_t) old.rlim_cur);
+	printf("; hard=");
+	if (old.rlim_max == RLIM_INFINITY)
+		printf("unlimited");
+	else
+		printf("%" PRIu64, (uint64_t) old.rlim_max);
+	printf("\n");
+
+	if (argc == 5) {
+		printf(" New limits: soft=");
+		if (new.rlim_cur == RLIM_INFINITY)
+			printf("unlimited");
+		else
+			printf("%" PRIu64, (uint64_t) new.rlim_cur);
+		printf("; hard=");
+		if (new.rlim_max == RLIM_INFINITY)
+			printf("unlimited");
+		else
+			printf("%" PRIu64, (uint64_t) new.rlim_max);
+		printf("\n");
+	}
+	exit(EXIT_SUCCESS);
+}
