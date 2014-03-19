@@ -1,19 +1,21 @@
+#!@SHELL@
+
 # nk_common.sh:
 #
 # NB: This aims to be POSIX.1-2008 compliant
 #
 ###########
 #
-# Copyright © 2012, 2013 Rowan Thorpe
+# Copyright © 2012, 2013, 2014 Rowan Thorpe
 #
-# This file is part of NOC-Kit.
+# This file is part of @PACKAGE_NAME@.
 #
-# NOC-Kit is free software: you can redistribute it and/or modify
+# @PACKAGE_NAME@ is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# NOC-Kit is distributed in the hope that it will be useful,
+# @PACKAGE_NAME@ is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU Affero General Public License for more details.
@@ -23,57 +25,60 @@
 #
 ###########
 #
-# For bug-reports please email: rowan *at* rowanthorpe _DOT_ com
-# (obviously, fix the address with the appropriate symbols and no spaces).
+# Report bugs to @PACKAGE_BUGREPORT@
 
+if test "x$1" = "x--nk-source"; then
+    cat "$0"
+    exit 0
+fi
 if test -z "$__common_sourced"; then
-	__scriptname="$0"
-	__scriptbasename="${__scriptname##*/}"
-	__scriptdirname="$(readlink -q -e -n "${__scriptname%/*}")"
-	__scriptname="${__scriptdirname}/${__scriptbasename}"
+    __scriptname="$(readlink -q -e -n "$0")"
+    __scriptbasename="$(printf %s "$__scriptname" | sed -n -e '$ { s:^.*/\([^/]*\)$:\1:; p }')"
+    __scriptdirname="$(printf %s "$__scriptname" | sed -e '$ s:/[^/]*$::')"
 
-	PACKAGE_VERSION="@PACKAGE_VERSION@"
-	. "${__root_dir}/nk_logic_ops.sh" || { printf %s\\n "Failed to load nk_logic_ops.sh"; return 1; }
-#	. "${__root_dir}/nk_lists.sh" || { printf %s\\n "Failed to load nk_lists.sh"; return 1; } #TODO
+    PACKAGE_VERSION="@PACKAGE_VERSION@"
+    . "${__root_dir}/nk_logic_ops.sh" || { printf %s\\n "Failed to load nk_logic_ops.sh" >&2; return 1; }
+#    . "${__root_dir}/nk_lists.sh" || { printf %s\\n "Failed to load nk_lists.sh"; return 1; } #TODO
 
-	__usage_footer() {
-		cat <<EOF
+    __usage_footer() {
+        cat <<EOF
+ @PACKAGE_BUGREPORT@
 
- Part of the NOC-Kit package.
+ Part of the @PACKAGE_NAME@ package.
  License AGPLv3+: GNU Affero GPL version 3 or later
  <http://gnu.org/licenses/agpl.html>.
  This is free software: you are free to change and redistribute it.
  There is NO WARRANTY, to the extent permitted by law.
 EOF
-	}
-	__version() { printf "%s - noc-kit %s\n" "$__scriptbasename" "$PACKAGE_VERSION"; }
-	__usage() { true; } # to override
-	__source() { cat "$0"; }
-	__info() { for i; do printf %s\\n "${__scriptbasename}: $i"; done; }
-	__warn() { __info "$@" >&2; }
-	__die() {
-    	if test "x$1" = "x-u"; then __usage >&2; shift; fi
-		if test "x$1" = "x--"; then	shift; fi
-		if test $# = 0; then
-			__exitval=1
-		else
-			if test $# -gt 1; then
-				__exitval=$1
-				shift
-			else
-				__exitval=1
-			fi
-			printf \\n >&2
-			__warn "$@" "Exiting."
-		fi
-		exit $__exitval
-	}
-	__lambda() {
-	    test $# = 2 || { printf %s\\n "Syntax error in __lambda()" >&2; return 1; }
-	    __lambda_vars="$(printf %s "$1" | tr "," " ")"
-	    __lambda_varsnum="$(printf %s "$__lambda_vars" | wc -w)"
-	    __lambda_cmd="$2"
-	    printf %s \
+    }
+    __version() { printf "%s - noc-kit %s\n" "$__scriptbasename" "$PACKAGE_VERSION"; }
+    __usage() { true; } # to override in each script
+    __source() { cat "$0"; }
+    __info() { for i; do printf %s\\n "${__scriptbasename}: $i"; done; }
+    __warn() { __info "$@" >&2; }
+    __die() {
+        if test "x$1" = "x-u"; then __usage >&2; shift; fi
+        if test "x$1" = "x--"; then shift; fi
+        if test $# = 0; then
+            __exitval=1
+        else
+            if test $# -gt 1; then
+                __exitval=$1
+                shift
+            else
+                __exitval=1
+            fi
+            printf \\n >&2
+            __warn "$@" "Exiting."
+        fi
+        exit $__exitval
+    }
+    __lambda() {
+        test $# = 2 || { printf %s\\n "Syntax error in __lambda()" >&2; return 1; }
+        __lambda_vars="$(printf %s "$1" | tr "," " ")"
+        __lambda_varsnum="$(printf %s "$__lambda_vars" | wc -w)"
+        __lambda_cmd="$2"
+        printf %s \
 '__lambda_func() {
     test $# = "'"$__lambda_varsnum"'" || { printf %s\\n "Syntax error: __lambda() requires '"$__lambda_varsnum"' arguments" >&2; return 1; }
     __lambda_func_vars="'"$__lambda_vars"'"
@@ -91,36 +96,37 @@ EOF
     unset __lambda_func_var
     unset __lambda_func_replacement
     eval "$__lambda_func_cmd"
+    unset __lambda_func_cmd
 }
 unset __lambda_vars
 unset __lambda_varsnum
 unset __lambda_cmd
-__lambda_func'
-	}
-	__map() {
-	    __map_cmd="$1"
-	    shift
-	    if __notempty "$@"; then
-	        for __arg do
-	            eval "$__map_cmd" \""$__arg"\"
-	        done
-			unset __map_cmd
-			unset __arg
-	    fi
-	}
-#	__apply() {} #TODO
-#	__filter() {} #TODO
-#	__reduce() {} #TODO
-	__cleanup() {
-	    __map unset $1
-	    __map "unset -f" $2
-	    __map unalias $3
-	    shift 3
-	    __map "rm -fR" "$@" 2>/dev/null
-	}
+__lambda_func
+unset -f __lambda_func'
+    }
+    __map() {
+        __map_cmd="$1"
+        shift
+        if __notempty "$@"; then
+            for __arg do
+                eval "$__map_cmd" \""$__arg"\"
+            done
+            unset __map_cmd
+            unset __arg
+        fi
+    }
+#    __apply() {} #TODO
+#    __filter() {} #TODO
+#    __reduce() {} #TODO
+    __cleanup() {
+        __map unset $1
+        __map "unset -f" $2
+        shift 2
+        __map "rm -fR" "$@" 2>/dev/null
+    }
 
-	__common_cleanup() {
-		__cleanup \
+    __common_cleanup() {
+        __cleanup \
 "__scriptname \
 __scriptbasename \
 __scriptdirname \
@@ -133,8 +139,7 @@ __info \
 __warn \
 __die \
 __lambda \
-__map"
-"" \
+__map" \
 ""
 ## TODO:
 #__apply \
@@ -153,8 +158,8 @@ __map"
 #__list_slice \
 #__list_reverse \
 #__list_sort
-		unset -f __cleanup
-		unset -f __common_cleanup
-	}
-	__common_sourced=1
+        unset -f __cleanup
+        unset -f __common_cleanup
+    }
+    __common_sourced=1
 fi

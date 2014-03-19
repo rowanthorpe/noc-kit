@@ -1,18 +1,18 @@
-NOC-Kit version @PACKAGE_VERSION@
-Copyright © 2012, 2013 Rowan Thorpe.
-Report bugs to rowan *at* rowanthorpe _DOT_ com
+@PACKAGE_STRING@
+Copyright © 2012, 2013, 2014 Rowan Thorpe.
+Report bugs to @PACKAGE_BUGREPORT@
 
 Quick Install Instructions:
 
- tar xjf noc-kit-@PACKAGE_VERSION@.tar.bz2 && \
-  cd noc-kit-@PACKAGE_VERSION@ && \
+ tar xjf @PACKAGE_TARNAME@-@PACKAGE_VERSION@.tar.bz2 && \
+  cd @PACKAGE_TARNAME@-@PACKAGE_VERSION@ && \
   mkdir build && \
   cd build && \
   ../configure && \
   make && \
   make install
 
-(or use "tar xJf noc-kit-@PACKAGE_VERSION@.tar.xz" above to extract an xz archive).
+(or use "tar xJf @PACKAGE_TARNAME@-@PACKAGE_VERSION@.tar.xz" above to extract an xz archive).
 
 See INSTALL file for more details.
 

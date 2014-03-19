@@ -12,7 +12,20 @@ Makefile.in
 
 # build leftovers
 
+/config.h
+/config.log
+/config.status
 /build
+/version.h
+/stamp-h1
+Makefile
+.deps
+/src/distro-specific/zfd.sh
+/src/general/nk_common.sh
+/src/general/nk_logic_ops.sh
+/src/general/showsigs
+/src/general/showsigs.c
+/src/general/slaughter.sh
 
 # Object files
 *.o
