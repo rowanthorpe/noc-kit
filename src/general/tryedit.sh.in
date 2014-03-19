@@ -1,0 +1,158 @@
+#!@SHELL@
+
+# tryedit.sh: see --help option for details
+#
+# NB: This aims to be POSIX.1-2008 compliant
+#
+###########
+#
+# Copyright © 2012, 2013 Rowan Thorpe
+#
+# This file is part of NOC-Kit.
+#
+# NOC-Kit is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# NOC-Kit is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+###########
+#
+# For bug-reports please email: rowan *at* rowanthorpe _DOT_ com
+# (obviously, fix the address with the appropriate symbols and no spaces).
+
+# Config
+__root_dir="@PKGLIBEXECDIR@"
+. "${__root_dir}/nk_common.sh" || {
+	printf 'Failed sourcing nk_common.sh. Stopping.\n' >&2
+	exit 1
+}
+
+__usage() {
+	cat <<EOH
+Usage: $__scriptbasename [OPTIONS] file [file] ...
+
+Locks and edits files, so anyone else who uses "$__scriptbasename" on any of the same
+files will be refused until you finish. Uses environment variable \$EDITOR as
+default editor (overridable by option-flag).
+
+ * The --source option does not automatically show sourced libs. To see those
+   execute them directly with one argument: --nk-source
+
+OPTIONS:
+ --help|-h|--usage    : This help page.
+ --version|-V|--about : Output information about this command.
+ --source|-S          : Output this command as source code.
+ --quiet|-q           : Don't output progress.
+ --editor|-e          : Set the editor to use (overrides \$EDITOR).
+ --                   : End option processing.
+
+DESCRIPTION:
+ TODO
+EOH
+	__usage_footer
+}
+
+__duration=1
+__repetitions=3
+__verbose=1
+__editor="$EDITOR"
+while test $# -gt 0; do
+    case "$1" in
+	--help|-h|--usage)
+		__usage
+		exit 0;;
+	--version|-V|--about)
+		__version
+		exit 0;;
+	--source|-S)
+		__source
+		exit 0;;
+	--quiet|-q)
+		__verbose=0
+		shift
+		continue;;
+    -e|--editor)
+		if test -z "$2"; then
+			__dief -u 1 'Invalid argument "%s" given for option "%s".\n' "$2" "$1"
+		fi
+        __editor="$2"
+        shift 2
+        continue;;
+    --)
+        shift
+        break;;
+    -*)
+        __dief -u 'Unrecognised option "%s" specified.\n' "$1";;
+    *)
+        break;;
+    esac
+done
+if test $# -lt 1; then
+    __die -u 1 'Specify at least one argument.'
+fi
+
+# Setup
+__ret=0
+__exit_val=0
+#__count=0
+
+# convert to absolute urls
+if ! newargs="$(__filter "readlink -f -n" "Can't correctly resolve file to edit (does it or its parent directory exist?)." "$@")"; then
+    __die 1 "Failed creating \$newargs."
+fi
+$__set "$newargs"' || __die 1 "Failed to \$__set."'
+
+# check existing args are writable files or can be created as such
+__check "__file_writable" "" "$@" || exit $?
+
+# create lookup list of already existing files (1 = doesn't exist, 0 = exists)
+if ! __file_not_exists_list="$(__filter "__file_exists_tag" "" "$@")"; then
+    __die 1 "Failed creating \$__file_not_exists_list."
+fi
+
+# setup editor commandline
+test -n "$__editor" || __editor=vi
+if ! __edit_string="$__editor $(__pickle "$@")"; then
+    __die 1 "Failed creating \$__edit_string."
+fi
+
+# setup entire flock recursive commandline
+__flock_string="$__edit_string"
+for arg in "$@"; do
+    __flock_string="flock -x -n '$(__pickle_arg "$arg")' -c '$(__pickle_arg "$__flock_string")'"
+done
+
+# run command and list lockers if it is blocked
+__warnf 'About to execute:\n%s\n' "$__flock_string"
+if ! eval "$__flock_string"; then
+    __locked_files="$(pgrep -f "flock -x -n ($(for arg; do printf '%s' "$arg" | sed -e 's/\([.*|$\]\)/\\\1/g; $ s/$/|/'; done | sed -e '$ s/|$//'))")"
+    if test -n "$__locked_files"; then
+        __who_locked_files="$(ps --no-headers -o user,cmd $__locked_files | sed -e 's/^\([^ \t]\+\)[ \t]\+flock -x -n \([^ \t]\+\)[ \t].*$/\1: \2/')"
+        __warnf 'Unable to get a lock due to the following file(s) being locked by the username(s) listed with it/them:\n%s\n' "$__who_locked_files"
+    else
+        __warn 'Unable to get a lock but not sure who is preventing it.'
+    fi
+    exit 1
+fi
+
+
+# set args with list of non-preexisting files
+$__set "$__file_not_exists_list"' || __die 1 "Failed to \$__set."'
+
+# clean up newly created *empty* files
+for arg; do
+    filename="$(printf '%s' "$arg" | sed -e '$ s/:[01]$//')"
+    existed_before="$(printf '%s' "$arg" | sed -ne '$ { s/^.*:\([01]\)$/\1/; p }')"
+    if test 1 = "$existed_before" && ! test -s "$filename"; then
+        __warnf 'Removing empty non-preexisting file "%s".\n' "$filename"
+        rm "$filename"
+    fi
+done
