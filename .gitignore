@@ -26,6 +26,10 @@ Makefile
 /src/general/showsigs
 /src/general/showsigs.c
 /src/general/slaughter.sh
+/src/general/tryedit.sh
+/src/system-specific/_miniprlimit
+/src/system-specific/_miniprlimit.c
+/src/system-specific/miniprlimit.sh
 
 # Object files
 *.o
