@@ -1,3 +1,8 @@
 This file is auto-generated. Run ./configure then re-read this, or read
-README.in if you don't mind the raw template vars. If you are online then visit
-this link: https://github.com/rowanthorpe/noc-kit/blob/master/README.in
+README.in if you don't mind the raw template vars.
+
+If you are online then read it at this link:
+ https://github.com/rowanthorpe/noc-kit/blob/master/README.in
+
+To see the the build status visit:
+ https://secure.travis-ci.org/rowanthorpe/noc-kit
