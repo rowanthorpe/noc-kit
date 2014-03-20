@@ -61,5 +61,5 @@ AC_SUBST([PACKAGE_STRING])
 AC_SUBST([PKGLIBEXECDIR])
 AC_SUBST([SHOWSIGS_SOURCE])
 AC_SUBST([MINIPRLIMIT_SOURCE])
-AC_CONFIG_FILES(README Makefile src/general/Makefile src/system-specific/Makefile src/distro-specific/Makefile src/app-specific/Makefile doc/Makefile tests/Makefile version.h src/general/showsigs.c src/system-specific/_miniprlimit.c src/general/nk_common.sh src/general/nk_logic_ops.sh src/general/slaughter.sh src/general/tryedit.sh src/system-specific/miniprlimit.sh src/distro-specific/zfd.sh)
+AC_CONFIG_FILES(README Makefile src/general/Makefile src/system-specific/Makefile src/distro-specific/Makefile src/app-specific/Makefile doc/Makefile version.h src/general/showsigs.c src/system-specific/_miniprlimit.c src/general/nk_common.sh src/general/nk_logic_ops.sh src/general/slaughter.sh src/general/tryedit.sh src/system-specific/miniprlimit.sh src/distro-specific/zfd.sh)
 AC_OUTPUT
