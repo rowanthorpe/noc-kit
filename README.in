@@ -27,3 +27,4 @@ TODO:
  * add help2man functionality to automake
  * add --pattern to slaughter.sh
  * merge marked tryedit.sh functions into nk_common.sh
+ * Fix truncation of --source output in .c files (split the macro-expansion text to manageable printf chunks?).
