@@ -52,7 +52,7 @@
 */
 
 void _help(FILE *stream) {
-	fprintf(stream, "%s\n", "Usage: _miniprlimit [--help|-h] [--version|-V] [--source|-S] [--] \n         <AS|CORE|CPU|DATA|FSIZE|LOCKS|MEMLOCK|MSGQUEUE|NOFILE|NICE|NPROC|RSS|RTPRIO|RTTIME|SIGPENDING|STACK|OFILE|NLIMITS> <pid> [<new-soft-limit> <new-hard-limit>]\n  A minimalist implementation of viewing and manipulating limit values on\nprocesses running under Linux >= 2.6.36 using its prlimit functionality.");
+	fprintf(stream, "%s\n", "Usage: _miniprlimit [--help|-h] [--version|-V] [--source|-S]\n         <AS|CORE|CPU|DATA|FSIZE|LOCKS|MEMLOCK|MSGQUEUE|NOFILE|NICE|NPROC|RSS|RTPRIO|RTTIME|SIGPENDING|STACK|OFILE|NLIMITS> <pid> [<new-soft-limit> <new-hard-limit>]\n  A minimalist implementation of viewing and manipulating limit values on\nprocesses running under Linux >= 2.6.36 using its prlimit functionality.");
 }
 void _version(FILE *stream) {
 	fprintf(stream, "_miniprlimit - @PACKAGE_STRING@\nCopyright (C) 2014 Rowan Thorpe.\nLicense AGPLv3+: GNU AGPL version 3 or later <http://gnu.org/licenses/agpl.html>\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.\n");
@@ -65,6 +65,8 @@ int main(int argc, char *argv[]) {
 	int proctype;
 	unsigned int count;
 	pid_t pid;
+
+	/* Note to self: for now can do naive opt-parsing (no need to "shift args", etc) because all options exit anyway */
 
 	if (argc > 1)
 		for (count = 1; count < (unsigned int)argc; count++) {
