@@ -41,7 +41,7 @@ if test -z "$__common_sourced"; then
 
     __usage_footer() {
         cat <<EOF
- @PACKAGE_BUGREPORT@
+ Report bugs to @PACKAGE_BUGREPORT@
 
  Part of the @PACKAGE_NAME@ package.
  License AGPLv3+: GNU Affero GPL version 3 or later
