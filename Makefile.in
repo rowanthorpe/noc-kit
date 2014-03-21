@@ -94,7 +94,6 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = README version.h
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -260,7 +259,10 @@ MINIPRLIMIT_SOURCE = @MINIPRLIMIT_SOURCE@
 MKDIR_P = @MKDIR_P@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
+PACKAGE_AUTHOR = @PACKAGE_AUTHOR@
+PACKAGE_AUTHOR_TARNAME = @PACKAGE_AUTHOR_TARNAME@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
+PACKAGE_COPYRIGHT_YEARS = @PACKAGE_COPYRIGHT_YEARS@
 PACKAGE_NAME = @PACKAGE_NAME@
 PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
@@ -316,10 +318,11 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = src/general src/system-specific src/app-specific doc
 EXTRA_DIST = autogen.sh
 dist_doc_DATA = AUTHORS COPYING NEWS README ChangeLog THANKS TODO
+# set this to override the default so README doesn't also get deleted by distclean
+CONFIG_CLEAN_FILES = version.h
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
@@ -833,7 +836,6 @@ uninstall-am: uninstall-dist_docDATA
 
 distclean-local:
 	-for filename in *.c *.sh; do ! test -e "${filename}.in" || rm -f "$filename"; done
-	printf "This file is auto-generated. Run ./configure then re-read this, or read\nREADME.in if you don't mind the raw template vars.\n\nIf you are online then read it at this link:\n https://github.com/rowanthorpe/noc-kit/blob/master/README.in\n\nTo see the the build status visit:\n https://secure.travis-ci.org/rowanthorpe/noc-kit\n" > README
 
 .SECONDARY: README
 

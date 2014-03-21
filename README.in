@@ -1,5 +1,5 @@
 @PACKAGE_STRING@
-Copyright © 2012, 2013, 2014 Rowan Thorpe.
+Copyright © @PACKAGE_COPYRIGHT_YEARS@ @PACKAGE_AUTHOR@.
 Report bugs to @PACKAGE_BUGREPORT@
 
 Quick Install Instructions:
@@ -17,13 +17,25 @@ Quick Install Instructions:
 See INSTALL file for more details. Note that the continuous integration builds
 are done via Travis, using the compile-make-makeinstall script at
 ./tests/travis.sh - if you want to compile in paranoid POSIX-y mode then check
-out that script.
+out the last few commands in that script.
 
 See the TODO file for details of upcoming changes or fixes.
+
+
+LATEST VERSION:
+
+ Find the latest version of this project at:
+     @PACKAGE_URL@
+
+ and this README at:
+     @PACKAGE_URL@/blob/master/README
 
 
 BUILD STATUS:
 
  The project's latest build status can be found at:
+     https://secure.travis-ci.org/@PACKAGE_AUTHOR_TARNAME@/@PACKAGE_TARNAME@
 
-   https://secure.travis-ci.org/rowanthorpe/@PACKAGE_TARNAME@
+ and if you are viewing this at github it's status should show below:
+     <img src="https://travis-ci.org/@PACKAGE_AUTHOR_TARNAME@/@PACKAGE_TARNAME@.svg?branch=master"/>
+

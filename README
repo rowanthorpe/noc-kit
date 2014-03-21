@@ -1,8 +1,41 @@
-This file is auto-generated. Run ./configure then re-read this, or read
-README.in if you don't mind the raw template vars.
+NOC-Kit 0.3.0
+Copyright © 2012, 2013, 2014 Rowan Thorpe.
+Report bugs to http://www.github.com/rowanthorpe/noc-kit/issues
 
-If you are online then read it at this link:
- https://github.com/rowanthorpe/noc-kit/blob/master/README.in
+Quick Install Instructions:
 
-To see the the build status visit:
- https://secure.travis-ci.org/rowanthorpe/noc-kit
+ tar xjf noc-kit-0.3.0.tar.bz2 && \
+  cd noc-kit-0.3.0 && \
+  mkdir build && \
+  cd build && \
+  ../configure && \
+  make && \
+  make install
+
+(or use "tar xJf noc-kit-0.3.0.tar.xz" above to extract an xz archive).
+
+See INSTALL file for more details. Note that the continuous integration builds
+are done via Travis, using the compile-make-makeinstall script at
+./tests/travis.sh - if you want to compile in paranoid POSIX-y mode then check
+out the last few commands in that script.
+
+See the TODO file for details of upcoming changes or fixes.
+
+
+LATEST VERSION:
+
+ Find the latest version of this project at:
+     http://www.github.com/rowanthorpe/noc-kit
+
+ and this README at:
+     http://www.github.com/rowanthorpe/noc-kit/blob/master/README
+
+
+BUILD STATUS:
+
+ The project's latest build status can be found at:
+     https://secure.travis-ci.org/rowanthorpe/noc-kit
+
+ and if you are viewing this at github it's status should show below:
+     <img src="https://travis-ci.org/rowanthorpe/noc-kit.svg?branch=master"/>
+
