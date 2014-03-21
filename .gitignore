@@ -8,7 +8,6 @@ Makefile.in
 /aclocal.m4
 /compile
 /config
-/configure
 
 # build leftovers
 
